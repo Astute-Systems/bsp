@@ -69,7 +69,7 @@ cp -p scripts/gxa-patch-fs.sh $DIR/scripts
 cp -p scripts/gxa-flash.sh $DIR/scripts
 cp -p scripts/gxa-utils.sh $DIR/scripts
 cp -pr config/l4t-overlay/${README_L4T_VERSION}/etc $DIR/config/l4t-overlay/rootfs
-
+cp -p config/l4t-overlay/${README_L4T_VERSION}/README.txt $DIR/.
 
 #######################################################
 #
@@ -88,11 +88,11 @@ RELEASE_PATCH=$(sed -n '3p' $PROJECT_ROOT/version | tr -d '\n')
 RELEASE_VERSION="${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_PATCH}"
 
 # Sed replace %data% with the current date
-sed -i "s/%date%/$(date)/g" $DIR/config/README.txt
+sed -i "s/%date%/$(date)/g" $DIR/README.txt
 sed -i "s/%date%/$(date)/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 
 # Sed replace the L4T version 
-sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/config/README.txt
+sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/README.txt
 sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/motd
 
@@ -110,7 +110,7 @@ sed -i "8s/.*/  L4T Version: L4T${L4T_VERSION}/" $DIR/config/l4t-overlay/rootfs/
 echoblue "Patching README file with L4T version and release version"
 cat  $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 echoblue "Patching README file with L4T version and release version"
-cat  $DIR/config/README.txt
+cat  $DIR/README.txt
 echoblue "Patching MOTD file with L4T version"
 cat  $DIR/config/l4t-overlay/rootfs/etc/motd
 
