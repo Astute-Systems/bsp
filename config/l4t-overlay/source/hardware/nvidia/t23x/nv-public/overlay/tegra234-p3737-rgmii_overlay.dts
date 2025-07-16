@@ -1,0 +1,106 @@
+// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-FileCopyrightText: Copyright (c) 2023-2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/tegra234-gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "tegra234-p3737-camera-modules.dtsi"
+
+#include <dt-bindings/input/linux-event-codes.h>
+#include <dt-bindings/input/gpio-keys.h>
+
+#include "tegra234-p3701-0000.dtsi"
+#include "tegra234-p3737-0000.dtsi"
+
+// /delete-node/ typec@8;
+
+/ {
+	overlay-name = "Test GXA overlay";
+
+	fragment@0 {
+		target-path = "/";
+		__overlay__ {
+			bus@0{
+				ethernet@2310000 {
+					status = "okay";
+					nvidia,mac-addr-idx = <0>;
+					nvidia,max-platform-mtu = <8000>;
+					nvidia,pause_frames = <0>;
+					local-mac-adress = [1a 2b 3c 4d 5e 6f];
+					nvidia,phy-reset-gpio = <&gpio TEGRA234_MAIN_GPIO(G, 5) 0>;
+					phy-handle = <&gbe0_phy>;
+					phy-mode = "rgmii-id";
+
+					mdio {
+						compatible = "nvidia,eqos-mdio";
+						#address-cells = <1>;
+						#size-cells = <0>;
+
+						gbe0_phy: phy@1 {
+							reg = <0>;
+							nvidia,phy-rst-pdelay-msec = <224>; /* msec */
+							nvidia,phy-rst-duration-usec = <10000>; /* usec */
+							interrupt-parent = <&gpio>;
+							interrupts = <TEGRA234_MAIN_GPIO(G, 4) IRQ_TYPE_LEVEL_LOW>;
+						};
+					};
+				};
+			};
+		};
+	};	
+	// fragment@1 {
+	// 	__overlay__ {
+	// 		bus@0 {
+	// 			i2c@c240000 {
+	// 				typec@8 {
+	// 					status = "disabled";
+	// 				};
+	// 			};
+	// 			// // /delete-node/ xusb_padctl;
+	// 			// xusb_padctl@3520000 {
+	// 			// 	pads {
+	// 			// 		usb2 {
+	// 			// 			lanes {
+	// 			// 				usb2-1 {
+	// 			// 					nvidia,function = "xusb";
+	// 			// 					status = "okay";
+	// 			// 				};
+	// 			// 			};
+	// 			// 		};
+	// 			// 		usb3 {
+	// 			// 			lanes {
+	// 			// 				usb3-1 {
+	// 			// 					nvidia,function = "xusb";
+	// 			// 					status = "okay";
+	// 			// 				};
+	// 			// 			};
+	// 			// 		};
+	// 			// 	};
+	// 			// 	ports {
+	// 			// 		usb2-1 {
+	// 			// 			mode = "host";
+	// 			// 			vbus-supply = <&battery_reg>;
+	// 			// 			status = "okay";
+	// 			// 		};
+	// 			// 		usb3-1 {
+	// 			// 			nvidia,usb2-companion = <1>;
+	// 			// 			status = "okay";
+	// 			// 		};
+	// 			// 	};
+	// 			// };
+	// 			// // /delete-node/ tegra_xhci;
+	// 			// tegra_xhci@3610000 {
+	// 			// 	phys = <&{/xusb_padctl@3520000/pads/usb2/lanes/usb2-1}>,<&{/xusb_padctl@3520000/pads/usb3/lanes/usb3-1}>;
+	// 			// 	phy-names = "usb2-1", "usb3-0";
+	// 			// 	nvidia,xusb-padctl = <&xusb_padctl>;
+	// 			// 	status = "okay";
+	// 			// };
+	// 		};
+	// 	};
+	// };
+};
+
+
+

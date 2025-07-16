@@ -1,0 +1,88 @@
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+# CMake policy
+cmake_policy(SET CMP0086 NEW)
+cmake_policy(SET CMP0078 NEW)
+
+# Enable C++17 standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(EXTERNAL_PREFIX ${CMAKE_BINARY_DIR}/_deps/install)
+
+execute_process (
+  COMMAND git config core.hooksPath ${CMAKE_SOURCE_DIR}/.githooks
+  OUTPUT_VARIABLE outVar
+)
+
+# Set git hooks to default locations
+set(GIT_HOOKS_DIR ${CMAKE_SOURCE_DIR}/.git/hooks)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -fPIC -Wall -Werror -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter -Wno-unused-result -Wno-unused-label -Wno-unused-value -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter -Wno-unused-result -Wno-unused-label -Wno-unused-value -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-attributes -Wno-deprecated-declarations -Wno-ignored-attributes -Wno-implicit-fallthrough")
+# If debug build, enable debug flags
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -fPIC -fprofile-arcs -ftest-coverage -Wall -Werror -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter -Wno-unused-result -Wno-unused-label -Wno-unused-value -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter -Wno-unused-result -Wno-unused-label -Wno-unused-value -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-attributes -Wno-deprecated-declarations -Wno-ignored-attributes -Wno-implicit-fallthrough")
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -fprofile-arcs -ftest-coverage")
+endif()
+
+# Options
+option(GST_SUPPORTED "GStreamer support" ON)
+if (GST_SUPPORTED) 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGST_SUPPORTED")
+endif()
+
+option(VAAPI_SUPPORTED "Intel VAAPI support" OFF)
+if (VAAPI_SUPPORTED) 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVAAPI_SUPPORTED")
+endif()
+
+option(NVENC_SUPPORTED "Nvidia NVENC support" OFF)
+if (NVENC_SUPPORTED) 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNVENC_SUPPORTED")
+endif()
+
+# KME Display tab
+if (KME)
+  message(STATUS "KME display TAB enabled")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DKME")
+endif()
+
+# DEFENCEX branding
+option(DEFENCEX "DefenceX branding" OFF)
+if (DEFENCEX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDEFENCEX")
+endif()
+
+
+# BUILD_CUDA
+option(BUILD_CUDA "Build CUDA" OFF)
+if (BUILD_CUDA)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_CUDA")
+endif()
+
+# BUILD_QT6 Wrappers
+option(BUILD_QT6 "Build QT6 Wrappers" OFF)
+if (BUILD_QT6)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_QT6")
+endif()
+
+option(BUILD_QT5 "Build QT5 Wrappers" OFF)
+if (BUILD_QT5)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBUILD_QT5")
+endif()
+
+if(CMAKE_BUILD_TYPE)
+    message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+else()
+    message(STATUS "Build type: Release")
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+# Make the intel arch amd64
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+  set(CMAKE_SYSTEM_PROCESSOR "amd64")
+endif()
+message(STATUS "Current System Processor: ${CMAKE_SYSTEM_PROCESSOR}" )
