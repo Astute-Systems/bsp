@@ -5,6 +5,8 @@ if [ -d "./build" ]; then
   sudo rm -rf ./build
 fi
 
+mkdir -p ./archive/bsp
+
 L4T_VERSION=$1
 # If $1 is provided print
 if [ ! -z "$L4T_VERSION" ]; then

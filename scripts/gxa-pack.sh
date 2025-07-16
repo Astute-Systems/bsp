@@ -67,7 +67,7 @@ cp -p scripts/gxa-init-build-machine.sh $DIR/scripts
 cp -p scripts/gxa-patch-fs.sh $DIR/scripts
 cp -p scripts/gxa-flash.sh $DIR/scripts
 cp -p scripts/gxa-utils.sh $DIR/scripts
-cp -pr src/${README_L4T_VERSION}/etc $DIR/config/l4t-overlay/rootfs
+cp -pr config/l4t-overlay/${README_L4T_VERSION}/etc $DIR/config/l4t-overlay/rootfs
 
 
 #######################################################
@@ -106,11 +106,19 @@ sed -i "s/%hash%/#$GIT_HASH/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 # Replace line 8 with the L4T version
 sed -i "8s/.*/  L4T Version: L4T${L4T_VERSION}/" $DIR/config/l4t-overlay/rootfs/etc/motd
 
+echoblue "Patching README file with L4T version and release version"
+cat  $DIR/config/l4t-overlay/rootfs/etc/bsp-release
+echoblue "Patching README file with L4T version and release version"
+cat  $DIR/config/README.txt
+echoblue "Patching MOTD file with L4T version"
+cat  $DIR/config/l4t-overlay/rootfs/etc/motd
+
 #######################################################
 #
 # CREATE THE PACKAGE
 #
 #######################################################
+echoblue "Creating the GXA Installer package"
 
 # Define the target directory
 TARGET_DIR="/opt/AstuteSys/${L4T_VERSION}"

@@ -1,0 +1,7 @@
+VENDOR="Astute Systems"
+MODEL="GXA-1"
+SUPPORT="https://astutesys.com/wiki/knowledge-base"
+BSP_DATE="%data%"
+BSP_VERSION="%release_version%"
+L4T_VERSION="%version%"
+GIT_HASH="%hash%"

@@ -35,6 +35,15 @@ HOST $ sudo ./flash.sh jetson-agx-orin-gxa-1 mmcblk0p1
 
 > NOTE: GXA-1 need to be in recovery mode ready to flash. Please refer to the Software Reference Manual if flashing manually.
 
+# Uninstall
+
+To uninstall the BSP:
+
+```
+unlink ${HOME}/AstuteSys
+sudo rm -rf /opt/AstuteSys
+```
+
 # Release Notes
 
 Video driver not included. Please install the analogue video driver from our website 
