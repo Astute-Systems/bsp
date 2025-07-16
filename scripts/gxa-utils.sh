@@ -78,7 +78,6 @@ function get_default(){
     echogreen "Number of versions=$num_versions"
 
     # Check if L4T_VERSION is set in the environment
-      echogreen "Latest L4T version=${L4T_VERSION}"
     if [ -z $L4T_VERSION ]; then
       L4T_VERSION=$(echo "$test" | sed -n "$((num_versions+2))p")
       #trim whitespace and "l4t" from the version

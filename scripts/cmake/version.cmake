@@ -19,12 +19,6 @@ endif()
 
 message(STATUS "Version (${PROJECT_NAME}): ${BSP_VERSION}")
 
-# Update documentation, sed repalce %version% with the current version
-file(READ ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resource/index.html.template INDEX_CONTENTS)
-string(REPLACE "%version%" ${BSP_VERSION} INDEX_CONTENTS ${INDEX_CONTENTS})
-string(REPLACE "%githash%" ${GIT_HASH} INDEX_CONTENTS ${INDEX_CONTENTS})
-file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resource/index.html ${INDEX_CONTENTS})
-
 set(VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/include/version.h)
 file(WRITE ${VERSION_FILE} "// This file it automatically generated, no not edit manually\n")
 file(APPEND ${VERSION_FILE} "#include <string>\n")
