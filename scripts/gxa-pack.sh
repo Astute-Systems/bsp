@@ -46,12 +46,13 @@ mkdir -p $DIR/scripts
 # Build as-pinctl, make sure its up to date
 #
 ####################################################### 
-cd $BUILD
-cmake ..
-make as-pinctl
-cd ..
-cp $BUILD/bin/as-pinctl $DIR
-
+if [ ! -f $FLAGS/as_pinctl_build ]; then
+  cd $BUILD
+  cmake ..
+  make as-pinctl
+  cd ..
+  cp $BUILD/bin/as-pinctl $DIR
+fi
 
 #######################################################
 #

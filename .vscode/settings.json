@@ -1,5 +1,9 @@
 {
     "cSpell.words": [
-        "echoblue"
+        "buildroot",
+        "dtbs",
+        "echoblue",
+        "pinctl",
+        "ROOTFS"
     ]
 }
