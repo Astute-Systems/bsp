@@ -8,6 +8,9 @@ fi
 
 WGET_EXTRA_ARGS="-q"
 
+# Print environment variable CI
+echo "CI=$CI"
+
 # if CI is exported in the environment, then we are running in CI
 if [ -z "CI" ]; then
   echo "CI is set, running in CI"

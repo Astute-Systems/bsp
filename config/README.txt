@@ -28,7 +28,7 @@ To re-run the flashing utility helper at a later time, cd to ~/AstuteSys and run
 Alternatively, you can manually flash the target from the command line.
 
 ```
-HOST $ sudo as-pinctrl -recovery
+HOST $ sudo ./as-pinctrl -recovery
 HOST $ cd ~/AstuteSys/l4t/Linux_for_Tegra/
 HOST $ sudo ./flash.sh jetson-agx-orin-gxa-1 mmcblk0p1
 ```
