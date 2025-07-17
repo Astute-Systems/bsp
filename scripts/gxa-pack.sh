@@ -130,3 +130,5 @@ TARGET_DIR="/opt/AstuteSys/${L4T_VERSION}"
 makeself --keep-umask --target "$TARGET_DIR" $DIR ${DIR}_${L4T_VERSION}.run \
         "Astute Systems GXA-1 software installer" \
         ./scripts/gxa-installer.sh ${L4T_VERSION}
+
+echoblue "Created new release ${DIR}_${L4T_VERSION}.run"
