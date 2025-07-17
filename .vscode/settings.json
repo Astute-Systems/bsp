@@ -5,6 +5,7 @@
         "echoblue",
         "makeself",
         "pinctl",
-        "ROOTFS"
+        "ROOTFS",
+        "Tegra"
     ]
 }

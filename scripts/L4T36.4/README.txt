@@ -5,7 +5,7 @@ Astute Systems GXA-1 Linux 4 Tegra Board Support Package (BSP)
   Created: %date%
   Linux4Tegra version: %l4t_version%
   BSP Release Version: %release_version%
-  Git Hash: %hash%
+  Git Hash: #%hash%
  
 # Flashing
 
@@ -34,15 +34,6 @@ HOST $ sudo ./flash.sh jetson-agx-orin-gxa-1 mmcblk0p1
 ```
 
 > NOTE: GXA-1 need to be in recovery mode ready to flash. Please refer to the Software Reference Manual if flashing manually.
-
-# Uninstall
-
-To uninstall the BSP:
-
-```
-unlink ${HOME}/AstuteSys
-sudo rm -rf /opt/AstuteSys
-```
 
 # Release Notes
 

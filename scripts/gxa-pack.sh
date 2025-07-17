@@ -8,7 +8,6 @@ echoblue "Building GXA Installer package"
 get_default
 
 README_L4T_VERSION="L4T${L4T_VERSION}"
-echo "Latest L4T version=${L4T_VERSION}"
 
 #######################################################
 #
@@ -68,14 +67,17 @@ cp -p scripts/gxa-init-build-machine.sh $DIR/scripts
 cp -p scripts/gxa-patch-fs.sh $DIR/scripts
 cp -p scripts/gxa-flash.sh $DIR/scripts
 cp -p scripts/gxa-utils.sh $DIR/scripts
-cp -pr config/l4t-overlay/${README_L4T_VERSION}/etc $DIR/config/l4t-overlay/rootfs
-cp -p config/l4t-overlay/${README_L4T_VERSION}/README.txt $DIR/.
+cp -pr scripts/${README_L4T_VERSION}/etc $DIR/config/l4t-overlay/rootfs
+cp -p scripts/${README_L4T_VERSION}/README.txt $DIR/.
 
 #######################################################
 #
 # PATCH THE README FILE
 #
 #######################################################  
+
+
+echoblue "Patching files in $DIR"
 
 # Store the short git hash
 GIT_HASH=$(git rev-parse --short HEAD)
@@ -97,10 +99,10 @@ sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/
 sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/motd
 
 # Sed replace the BSP version 
-sed -i "s/%release_version%/${RELEASE_VERSION}/g" $DIR/config/README.txt
+sed -i "s/%release_version%/${RELEASE_VERSION}/g" $DIR/README.txt
 sed -i "s/%release_version%/${RELEASE_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 # Sed replace the git hash with %hash%
-sed -i "s/%hash%/$GIT_HASH/g" $DIR/config/README.txt
+sed -i "s/%hash%/$GIT_HASH/g" $DIR/README.txt
 sed -i "s/%hash%/#$GIT_HASH/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 
 # Update MOTD with correct L4T version

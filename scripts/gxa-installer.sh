@@ -56,7 +56,7 @@ ln -s /opt/AstuteSys/${L4T_VERSION} /home/${SUDO_USER}/AstuteSys
 #
 #######################################################
 pwd
-cat config/README.txt
+cat ./README.txt
 echo ""
 echored "NOTE: Please ensure you have an internet connection before proceeding"
 echo ""
