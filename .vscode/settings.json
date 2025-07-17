@@ -3,6 +3,7 @@
         "buildroot",
         "dtbs",
         "echoblue",
+        "echored",
         "makeself",
         "pinctl",
         "ROOTFS",

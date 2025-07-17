@@ -83,9 +83,9 @@ function get_default(){
       #trim whitespace and "l4t" from the version
       L4T_VERSION=$(echo $L4T_VERSION | xargs)
       L4T_VERSION=$(echo $L4T_VERSION | sed 's/l4t//')
-      echogreen "Latest L4T version=${L4T_VERSION}"
     fi
     export L4T_VERSION
+    echogreen "Latest L4T version=${L4T_VERSION}"
 
     # If /version file does not exist then return
     if [ ! -f $PROJECT_ROOT/version ]; then

@@ -46,7 +46,6 @@ source ./config/gxa-build.conf
 #######################################################
 # Check for arguments
 L4T_VERSION=$1
-echoblue "GXA Installer: Starting $L4T_VERSION"
 echoblue "GXA Installer: Creating symlink in home directory to /opt/AstuteSys/${L4T_VERSION}"
 ln -s /opt/AstuteSys/${L4T_VERSION} /home/${SUDO_USER}/AstuteSys
 
