@@ -29,7 +29,7 @@ Alternatively, you can manually flash the target from the command line.
 
 ```
 HOST $ sudo as-pinctrl -recovery
-HOST $ cd ~/AstuteSys/l4t/Linux_for_Tegra/
+HOST $ cd ~/AstuteSys/build/l4t/Linux_for_Tegra/
 HOST $ sudo ./flash.sh jetson-agx-orin-gxa-1 mmcblk0p1
 ```
 
