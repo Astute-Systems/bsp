@@ -90,6 +90,7 @@ RELEASE_PATCH=$(sed -n '3p' $PROJECT_ROOT/version | tr -d '\n')
 RELEASE_VERSION="${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_PATCH}"
 
 # Sed replace %data% with the current date
+sed -i "s/%year%/$(date +%Y)/g" $DIR/LICENSE
 sed -i "s/%date%/$(date)/g" $DIR/README.txt
 sed -i "s/%date%/$(date)/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 
