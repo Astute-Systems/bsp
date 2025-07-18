@@ -7,9 +7,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 source ./config/gxa-build.conf
+source ./scripts/gxa-utils.sh
 
 if [ ! -f /usr/bin/as-pinctl ]; then
-  echo "as-pinctl not found. "
+  echo "as-pinctl not found. " 
   if [ ! -f $SOURCES/bin/as-pinctl ]; then
     $PROJECT_ROOT/scripts/gxa-make.sh as-pinctl
   fi
@@ -48,17 +49,20 @@ function recovery {
 
 function retest() {
   # sleep for 0.5 seconds
-  USB_DEVICE_ID=0955:7023
+  USB_DEVICE_ID="0955:7023"
 
   # Set $DETECT is nvidia device is detected in recovery mode
-  DEVICE=$(lsusb -d $USB_DEVICE_ID ) || true
+  lsusb -d $USB_DEVICE_ID
+
+  echo "lsusb -d $USB_DEVICE_ID"
+  RET=$?
 
   # Check RET is 0
   if [ $RET -eq 0 ]; then
-      echo "NVIDIA device ($USB_DEVICE_ID) detected in recovery mode."
+      echoblue "NVIDIA device ($USB_DEVICE_ID) detected in recovery mode."
       return 0
   else
-      echo "NVIDIA device ($USB_DEVICE_ID) not detected in recovery mode."
+      echoblue "NVIDIA device ($USB_DEVICE_ID) not detected in recovery mode."
       echo "attempting to enter recovery mode..."
       # Attempt to enter recovery mode
       as-pinctl -recovery
@@ -66,7 +70,6 @@ function retest() {
       return 1
   fi
 }
-
 
 recovery
 full_flash

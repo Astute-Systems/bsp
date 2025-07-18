@@ -54,7 +54,6 @@ ln -s /opt/AstuteSys/${L4T_VERSION} /home/${SUDO_USER}/AstuteSys
 # Cat the README.txt file and wite for user input
 #
 #######################################################
-pwd
 cat ./README.txt
 echo ""
 echored "NOTE: Please ensure you have an internet connection before proceeding"
