@@ -113,7 +113,7 @@ fi
 ##############################################
 echoblue "Setting up development environment"yy
 download_and_extract $TOOLCHAIN $SOURCES/toolchain 
-download_and_extract $KERNEL $SOURCES/kernel
+download_and_extract $KERNEL $SOURCES
 
 TOOLCHAIN_FILENAME=$(basename $TOOLCHAIN)
 
@@ -121,12 +121,13 @@ COMPILER=$(tar -xvf $SOURCES/$TOOLCHAIN_FILENAME -C $KERNEL_SOURCES | head -n 1 
 if [ ! -f $FLAGS/toolchain_check ]; then
   echogreen "Extracting toolchain"
   tar -xf $SOURCES/$TOOLCHAIN_FILENAME -C $KERNEL_SOURCES
-  echogreen COMPILER=$COMPILER >> $CONFIG/gxa-build.conf
+  ## TODO: Only works if you replace, dont keep adding everytime...
+  # echo COMPILER=$COMPILER >> $CONFIG/gxa-build.conf
   touch $FLAGS/toolchain_check
 fi
 if [ ! -f $FLAGS/kernel_check ]; then
-  echogreen "Extracting kernel sources"
-  tar -xf $SOURCES/kernel -C $SOURCES
+  echogreen "Extracting kernel sources ($KERNEL_SOURCES)"
+  ls $KERNEL_SOURCES
   tar -xf $KERNEL_SOURCES/kernel_src.tbz2 -C $KERNEL_SOURCES
   tar -xf $KERNEL_SOURCES/kernel_oot_modules_src.tbz2 -C $KERNEL_SOURCES
   tar -xf /$KERNEL_SOURCES/nvidia_kernel_display_driver_source.tbz2 -C $KERNEL_SOURCES

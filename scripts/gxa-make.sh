@@ -7,7 +7,7 @@
 #######################################################
 
 source ./config/gxa-build.conf
-
+source ./scripts/gxa-utils.sh 
 
 if [ ! -d $BUILD ]; then
     mkdir $BUILD
@@ -49,6 +49,7 @@ function make_dtbs {
 ###
 #################
     if [ ! -f $FLAGS/kernel_build ]; then
+        echoblue "Making the kernel source"
         make_kernel
     fi
 ###################
@@ -56,6 +57,7 @@ function make_dtbs {
 ### Need to patch the filesystem to include the device tree files
 ###
 #################
+    echoblue "Patching the BSP"
     cd $PROJECT_ROOT
     $PROJECT_ROOT/scripts/gxa-patch-fs.sh
 
@@ -66,9 +68,13 @@ function make_dtbs {
 #######################
 
     # BUILD DEVICE TREE
+    echoblue "Making the dtbs device tree"
     cd $KERNEL_SOURCES
     make dtbs
     cp $L4T/kernel/dtb/$DTB_FILE $CONFIG/l4t-overlay/kernel/dtb/
+    ls -al $L4T/kernel/dtb/$DTB_FILE 
+
+    echoblue "Copied to $CONFIG/l4t-overlay/kernel/dtb/$DTB_FILE"
 }
 
 function make_pinctl {
