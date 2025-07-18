@@ -48,10 +48,20 @@ function make_dtbs {
 ### Need the device tree compiler. Probably could just install it.
 ###
 #################
-    if [ ! -f $FLAGS/kernel_build ]; then
-        echoblue "Making the kernel source"
-        make_kernel
+
+    # Takes too long to compile the device tree compiler from source
+    # so we will just install it from the package manager
+    # if [ ! -f $FLAGS/kernel_build ]; then
+    #     echoblue "Making the kernel source"
+    #     make_kernel
+    # fi
+
+    sudo apt install -y device-tree-compiler
+    # create a symbolic link to the dtc binary
+    if [ ! -f /lib/modules/6.11.0-29-generic/build/scripts/dtc/dtc ]; then
+        sudo ln -s /usr/bin/dtc /lib/modules/6.11.0-29-generic/build/scripts/dtc/dtc
     fi
+
 ###################
 ###
 ### Need to patch the filesystem to include the device tree files

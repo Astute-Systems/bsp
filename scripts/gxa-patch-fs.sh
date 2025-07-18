@@ -61,4 +61,4 @@ else
   rm -rf $L4T/rootfs/etc/nvpower/nvfancontrol
 fi
 
-echo "Done..."
+echoblue "Patching done..."

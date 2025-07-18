@@ -13,8 +13,7 @@
 #include "tegra234-p3737-0000.dtsi"
 
 / {
-	// model = "NVIDIA Jetson AGX Orin Developer Kit";
-	model = "Astute GXA-1";
+	model = "Astute Systems GXA-1";
 	compatible = "nvidia,p3737-0000+p3701-0000", "nvidia,p3701-0000", "nvidia,tegra234";
 
 	aliases {

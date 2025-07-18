@@ -38,15 +38,15 @@ function download_and_extract() {
 
   # if the destination directory does not exist, create it
   if [ ! -d $dest_dir ]; then
-    echoblue "Creating directory $dest_dir"
-    mkdir -p $dest_dir
+    echo "Creating directory $dest_dir"
+    sudo -u $SUDO_USER mkdir -p $dest_dir
   fi
 
   if [ ! -f $SOURCES/$filename ]; then
-    echoblue "Downloading $filename"
-    wget ${WGET_EXTRA_ARGS} -O $SOURCES/$filename $url
+    echogreen "Downloading $filename"
+    sudo -u $SUDO_USER wget ${WGET_EXTRA_ARGS} -O $SOURCES/$filename $url
   else
-    echogreen "File $filename already exists, skipping download"
+    echo "File $filename already exists, skipping download"
     return 0
   fi
   # Extract the file to the destination directory

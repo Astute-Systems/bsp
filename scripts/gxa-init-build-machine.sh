@@ -8,8 +8,6 @@ fi
 
 WGET_EXTRA_ARGS="-q"
 
-# Print environment variable CI
-echo "CI=$CI"
 
 # if CI is exported in the environment, then we are running in CI
 if [ -z "CI" ]; then
@@ -29,7 +27,7 @@ source ./config/gxa-build.conf
 
 #create build dir as unprivileged user
 if [ ! -d $BUILD ]; then
-  mkdir -p $BUILD
+  sudo -u $SUDO_USER mkdir -p $BUILD
 fi
 
 #######################################################
@@ -48,6 +46,14 @@ fi
 L4T_RELEASE=$2
 
 source ./scripts/gxa-utils.sh $L4T_RELEASE
+echoblue "GXA-1 Initialization Script"
+
+# If CI defined in environment, then we are running in CI
+if [ -z "$CI" ]; then
+  echo "CI is not set, running in local environment"
+else
+  echo "CI is set, running in CI"
+fi
 
 #######################################################
 #
@@ -84,8 +90,10 @@ echogreen "ROOTFS=$ROOTFS"
 echogreen "KERNEL=$KERNEL"
 
 if [ ! -d $FLAGS ]; then
-  mkdir -p "$FLAGS"
+  sudo -u $SUDO_USER mkdir -p "$FLAGS"
 fi
+
+echoblue "Setting up development environment"
 
 download_and_extract $NVIDIA $SOURCES
 download_and_extract $ROOTFS $L4T_ROOTFS
@@ -93,7 +101,7 @@ download_and_extract $ROOTFS $L4T_ROOTFS
 if [ ! -f "$FLAGS/bin_flag" ]; then
   echoblue "Applying binaries"
   "$L4T/apply_binaries.sh"
-  touch "$FLAGS/bin_flag"
+  sudo -u $SUDO_USER  touch "$FLAGS/bin_flag"
 fi
 
 ###############################################
@@ -102,7 +110,7 @@ fi
 ##
 ##############################################
 if [ "$FINAL" == "TRUE" ]; then
-  echoblue "Production build setup completed"
+  echo "Production build setup completed"
   exit 0 
 fi
 
@@ -111,7 +119,6 @@ fi
 ##    Setup Development Environment
 ##
 ##############################################
-echoblue "Setting up development environment"yy
 download_and_extract $TOOLCHAIN $SOURCES/toolchain 
 download_and_extract $KERNEL $SOURCES
 
@@ -119,18 +126,21 @@ TOOLCHAIN_FILENAME=$(basename $TOOLCHAIN)
 
 COMPILER=$(tar -xvf $SOURCES/$TOOLCHAIN_FILENAME -C $KERNEL_SOURCES | head -n 1 | cut -d '/' -f 1)
 if [ ! -f $FLAGS/toolchain_check ]; then
-  echogreen "Extracting toolchain"
+  echogreen "Extracting $TOOLCHAIN_FILENAME"
   tar -xf $SOURCES/$TOOLCHAIN_FILENAME -C $KERNEL_SOURCES
-  ## TODO: Only works if you replace, dont keep adding everytime...
-  # echo COMPILER=$COMPILER >> $CONFIG/gxa-build.conf
+
+  # Replace the COMPILER value in gxa-build.conf
+  sed -i "/^COMPILER=/c\COMPILER=$COMPILER" $CONFIG/gxa-build.conf
+
   touch $FLAGS/toolchain_check
 fi
 if [ ! -f $FLAGS/kernel_check ]; then
-  echogreen "Extracting kernel sources ($KERNEL_SOURCES)"
-  ls $KERNEL_SOURCES
+  echogreen "Extracting kernel_src.tbz2"
   tar -xf $KERNEL_SOURCES/kernel_src.tbz2 -C $KERNEL_SOURCES
+  echogreen "Extracting kernel_oot_modules_src.tbz2"
   tar -xf $KERNEL_SOURCES/kernel_oot_modules_src.tbz2 -C $KERNEL_SOURCES
-  tar -xf /$KERNEL_SOURCES/nvidia_kernel_display_driver_source.tbz2 -C $KERNEL_SOURCES
+  echogreen "Extracting nvidia_kernel_display_driver_source.tbz2"
+  tar -xf $KERNEL_SOURCES/nvidia_kernel_display_driver_source.tbz2 -C $KERNEL_SOURCES
   touch $FLAGS/kernel_check
 fi
 echoblue "Development build setup completed"

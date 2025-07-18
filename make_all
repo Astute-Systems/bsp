@@ -3,10 +3,6 @@
 echo "Making all BSPs"
 
 ./make 36.3
-cp ./build/*.run ./archive/bsp/.
 ./make 36.4
-cp ./build/*.run ./archive/bsp/.
 ./make 36.4.3
-cp ./build/*.run ./archive/bsp/.
 ./make 36.4.4
-cp ./build/*.run ./archive/bsp/.
