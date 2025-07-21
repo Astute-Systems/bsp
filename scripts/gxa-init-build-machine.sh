@@ -27,7 +27,8 @@ source ./config/gxa-build.conf
 
 #create build dir as unprivileged user
 if [ ! -d $BUILD ]; then
-  sudo -u $SUDO_USER mkdir -p $BUILD
+  mkdir -p $BUILD
+  chmod a+rw $BUILD
 fi
 
 #######################################################
