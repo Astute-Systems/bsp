@@ -52,9 +52,7 @@ function retest() {
   USB_DEVICE_ID="0955:7023"
 
   # Set $DETECT is nvidia device is detected in recovery mode
-  lsusb -d $USB_DEVICE_ID
-
-  echo "lsusb -d $USB_DEVICE_ID"
+  lsusb -d $USB_DEVICE_ID > /dev/null 2>&1
   RET=$?
 
   # Check RET is 0
@@ -63,10 +61,10 @@ function retest() {
       return 0
   else
       echoblue "NVIDIA device ($USB_DEVICE_ID) not detected in recovery mode."
-      echo "attempting to enter recovery mode..."
+      echored "Attempting to enter recovery mode..."
       # Attempt to enter recovery mode
       as-pinctl -recovery
-      wait 
+      sleep 3
       return 1
   fi
 }
