@@ -12,7 +12,7 @@ include(scripts/cmake/version.cmake)
 include(scripts/cmake/doxygen.cmake)
 include(scripts/cmake/cpp.cmake)
 include(scripts/cmake/githooks.cmake)
-include(scripts/cmake/cpack.cmake)
+# include(scripts/cmake/cpack.cmake)
 
 add_subdirectory(scripts)
 add_subdirectory(src)

@@ -27,3 +27,16 @@ find_package(gflags REQUIRED)
 # Link the libftdi1 library
 target_link_libraries(as-pinctl pinlib ${LIBFTDI1_LIBRARIES} ${GFLAGS_LIBRARIES})
 
+# Install target
+install(TARGETS as-pinctl DESTINATION bin)
+
+# CPack configuration for .deb package
+set(CPACK_GENERATOR "DEB")
+set(CPACK_PACKAGE_NAME "as-pinctl")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ross Newman") # Replace with your name/email
+set(CPACK_PACKAGE_VERSION ${BSP_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION "Pin control utility for Astute Systems boards")
+set(CPACK_PACKAGE_CONTACT "ross.newman@astutesys.com") # Replace with your contact
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libftdi1, libgflags-dev")
+
+include(CPack)

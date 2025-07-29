@@ -1,0 +1,76 @@
+name: "Ubuntu 22.04 Intel BSP"
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-22.04
+
+    # Map a step output to a job output
+    outputs:
+      package_name: ${{ steps.package.outputs.RUN_PACKAGE }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Apt Update
+        run: |
+          sudo apt-get update
+
+      - name: Apt Install Step 1
+        run: |
+          mkdir -p build
+          sudo ./scripts/gxa-init-build-machine.sh prod
+          source ./scripts/gxa-utils.sh
+          get_default
+          echo "L4T_VERSION=${L4T_VERSION}" >> $GITHUB_ENV
+
+      - name: CMake and Build
+        run: |
+          mkdir -p build
+          cd build 
+          cmake .. 
+          make as-pinctl
+          cd ..
+
+      - name: Test
+        run: |
+          ./build/bin/as-pinctl -version
+
+      - name: Package
+        run: |
+          sudo ./scripts/gxa-patch-fs.sh
+          ./scripts/gxa-pack.sh
+
+      - name: Execute makeself
+        run: |
+          cd build
+          sudo ./gxa-installer_${{ env.L4T_VERSION }}.run --noexec
+          cat /opt/AstuteSys/README.txt
+
+      - name: Package
+        run: |
+          RELEASE_MAJOR=$(sed -n '1p' version | tr -d '\n')
+          RELEASE_MINOR=$(sed -n '2p' version | tr -d '\n')
+          RELEASE_PATCH=$(sed -n '3p' version | tr -d '\n')
+          RELEASE_VERSION="${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_PATCH}"
+          cd build
+          export UBUNTU_VERSION="ubuntu-22.04"
+          echo "RUN_PACKAGE=$(ls *.run)" >> $GITHUB_ENV
+          echo "RUN_PACKAGE_NAME=$(ls *.run).${UBUNTU_VERSION}" >> $GITHUB_ENV
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.RUN_PACKAGE_NAME }}
+          path: build/${{ env.RUN_PACKAGE }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: as-pinctl-${RELEASE_VERSION}-ubuntu-22.04-amd64.deb
+          path: build/*.deb
