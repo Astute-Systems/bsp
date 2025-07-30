@@ -42,11 +42,11 @@ jobs:
 
       - name: CMake and Build
         run: |
+          export OS_VERSION="${{ env.UBUNTU_VERSION }}"
           mkdir -p build
           cd build 
           cmake .. 
           make as-pinctl
-          export OS_VERSION="${{ env.UBUNTU_VERSION }}"
           cpack
           cd ..
 
@@ -56,12 +56,13 @@ jobs:
 
       - name: Package
         run: |
-          sudo ./scripts/gxa-patch-fs.sh
           export OS_VERSION="${{ env.UBUNTU_VERSION }}"
+          sudo ./scripts/gxa-patch-fs.sh
           ./scripts/gxa-pack.sh
 
       - name: Execute makeself
         run: |
+          export OS_VERSION="${{ env.UBUNTU_VERSION }}"
           cd build
           sudo ./gxa-installer_${{ env.L4T_VERSION }}_${{ env.UBUNTU_VERSION }}.run --noexec
           cat /opt/AstuteSys/${{ env.L4T_VERSION }}/README.txt
