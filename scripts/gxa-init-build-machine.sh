@@ -65,7 +65,7 @@ fi
 #######################################################
 echoblue "Installing necessary packages for $RELEASE build"
 sudo apt-get update -y $APT_EXTRA_ARGS
-sudo apt-get install -y $APT_EXTRA_ARGS qemu-user-static flex bison bc libxml2-utils makeself cpio pkg-config dialog dpkg wget sudo lbzip2 make cmake gcc g++ libgpiod-dev libftdi1-dev libgflags-dev
+sudo apt-get install -y $APT_EXTRA_ARGS qemu-user-static libxml2-utils flex bison bc libxml2-utils makeself cpio pkg-config dialog dpkg wget sudo lbzip2 make cmake gcc g++ libgpiod-dev libftdi1-dev libgflags-dev
 echo "L4T Version: $L4T_VERSION"
 
 echoblue "Reading L4T Version from XML file"
