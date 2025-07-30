@@ -28,7 +28,7 @@ jobs:
           RELEASE_PATCH=$(sed -n '3p' version | tr -d '\n')
           RELEASE_VERSION="${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_PATCH}"
           echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
-          echo "UBUNTU_VERSION=_ubuntu-24.04" >> $GITHUB_ENV
+          echo "UBUNTU_VERSION=_ubuntu-22.04" >> $GITHUB_ENV
           sudo apt-get update
           sudo apt-get install -y libxml2-utils
 
