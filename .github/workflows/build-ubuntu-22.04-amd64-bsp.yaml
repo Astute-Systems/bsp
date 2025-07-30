@@ -3,11 +3,13 @@ name: "Ubuntu 22.04 Intel BSP"
 on:
   push:
     branches: main
+    tags: # trigger on tags
+      - "v*"
   pull_request:
     branches: main
 
 permissions:
-  contents: read
+  contents: write # Needed for release upload
   pull-requests: read
 
 jobs:
@@ -78,3 +80,15 @@ jobs:
         with:
           name: as-pinctl-${{ env.RELEASE_VERSION }}-ubuntu-24.04.deb
           path: build/*.deb
+
+      # Only run on tag push
+      - name: Upload artifacts to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "${GITHUB_REF#refs/tags/}" >/dev/null 2>&1 || \
+            gh release create "${GITHUB_REF#refs/tags/}" --title "${GITHUB_REF#refs/tags/}" --notes "Automated release for ${GITHUB_REF#refs/tags/}"
+          for file in build/*.deb build/*.run; do
+            [ -f "$file" ] && gh release upload "${GITHUB_REF#refs/tags/}" "$file" --clobber
+          done
