@@ -23,13 +23,13 @@ jobs:
         run: |
           sudo apt-get update
 
-      - name: Apt Install Step 1
+      - name: Apt Install
         run: |
           mkdir -p build
-          sudo ./scripts/gxa-init-build-machine.sh prod
           source ./scripts/gxa-utils.sh
           get_default
           echo "L4T_VERSION=${L4T_VERSION}" >> $GITHUB_ENV
+          sudo ./scripts/gxa-init-build-machine.sh ${L4T_VERSION} prod
 
       - name: CMake and Build
         run: |
@@ -72,5 +72,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: as-pinctl-${RELEASE_VERSION}-ubuntu-22.04-amd64.deb
+          name: as-pinctl-${RELEASE_VERSION}-ubuntu-22.04.deb
           path: build/*.deb

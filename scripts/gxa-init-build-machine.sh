@@ -49,6 +49,8 @@ L4T_RELEASE=$2
 source ./scripts/gxa-utils.sh $L4T_RELEASE
 echoblue "GXA-1 Initialization Script"
 
+echo "L4T Version: $L4T_VERSION"
+
 # If CI defined in environment, then we are running in CI
 if [ -z "$CI" ]; then
   echo "CI is not set, running in local environment"
@@ -64,6 +66,7 @@ fi
 echoblue "Installing necessary packages for $RELEASE build"
 sudo apt-get update -y $APT_EXTRA_ARGS
 sudo apt-get install -y $APT_EXTRA_ARGS qemu-user-static flex bison bc libxml2-utils makeself cpio pkg-config dialog dpkg wget sudo lbzip2 make cmake gcc g++ libgpiod-dev libftdi1-dev libgflags-dev
+echo "L4T Version: $L4T_VERSION"
 
 echoblue "Reading L4T Version from XML file"
 grunt=$(xmllint --xpath "string(/l4tSources/l4t${RELEASE})" ${XML_FILE})
@@ -80,6 +83,7 @@ else
       get_default
   fi
 fi
+echo "L4T Version: $L4T_VERSION"
 
 TOOLCHAIN=$(xmllint --xpath "string(/l4tSources/l4t${L4T_VERSION}/toolchain)" ${XML_FILE})
 NVIDIA=$(xmllint --xpath "string(/l4tSources/l4t${L4T_VERSION}/nvidia)" ${XML_FILE})
