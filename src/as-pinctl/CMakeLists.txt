@@ -38,5 +38,22 @@ set(CPACK_PACKAGE_VERSION ${BSP_VERSION})
 set(CPACK_PACKAGE_DESCRIPTION "Pin control utility for Astute Systems boards")
 set(CPACK_PACKAGE_CONTACT "ross.newman@astutesys.com") # Replace with your contact
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libftdi1, libgflags-dev")
+# Set the package architecture for arm64 or amd64
+if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")   
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "arm64")
+else()
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+endif()
+
+# Get the linux version from an environment variable or default to "unknown"
+if(DEFINED ENV{OS_VERSION})
+    set(CPACK_DEBIAN_PACKAGE_OS_RELEASE "$ENV{OS_VERSION}")
+else()
+    set(CPACK_DEBIAN_PACKAGE_OS_RELEASE "_Linux")
+endif()
+
+# Set the output .deb file name to include version and architecture
+set(CPACK_PACKAGE_FILE_NAME "as-pinctl-${BSP_VERSION}-${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}${CPACK_DEBIAN_PACKAGE_OS_RELEASE}")
+
 
 include(CPack)

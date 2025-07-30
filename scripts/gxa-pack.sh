@@ -127,9 +127,14 @@ echoblue "Creating the GXA Installer package"
 # Define the target directory
 TARGET_DIR="/opt/AstuteSys/${L4T_VERSION}"
 
+# Get enc OS_VERSION
+if [ -z "$OS_VERSION" ]; then
+  OS_VERSION="ubuntu-22.04"
+fi  
+
         # --clean /opt/AstuteSys/scripts/gxa-installer-cleanup.sh \
-makeself --keep-umask --target "$TARGET_DIR" $DIR ${DIR}_${L4T_VERSION}.run \
+makeself --keep-umask --target "$TARGET_DIR" $DIR ${DIR}_${L4T_VERSION}${OS_VERSION}.run \
         "Astute Systems GXA-1 software installer" \
         ./scripts/gxa-installer.sh ${L4T_VERSION}
 
-echoblue "Created new release ${DIR}_${L4T_VERSION}.run"
+echoblue "Created new release ${DIR}_${L4T_VERSION}${OS_VERSION}.run"
