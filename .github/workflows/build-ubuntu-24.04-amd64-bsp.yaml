@@ -53,7 +53,7 @@ jobs:
         run: |
           cd build
           sudo ./gxa-installer_${{ env.L4T_VERSION }}.run --noexec
-          cat /opt/AstuteSys/README.txt
+          cat /opt/AstuteSys/${{ env.L4T_VERSION }}/README.txt
 
       - name: Package
         run: |
