@@ -64,7 +64,7 @@ jobs:
         run: |
           export OS_VERSION="${{ env.UBUNTU_VERSION }}"
           cd build
-          sudo ./gxa-installer_${{ env.L4T_VERSION }}_${{ env.UBUNTU_VERSION }}.run --noexec
+          sudo ./gxa-installer_${{ env.L4T_VERSION }}${{ env.UBUNTU_VERSION }}.run --noexec
           cat /opt/AstuteSys/${{ env.L4T_VERSION }}/README.txt
 
       - name: Package
@@ -81,7 +81,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: as-pinctl-${{ env.RELEASE_VERSION }}-ubuntu-24.04.deb
+          name: as-pinctl-${{ env.RELEASE_VERSION }}${{ env.UBUNTU_VERSION }}.deb
           path: build/*.deb
 
       # Only run on tag push
