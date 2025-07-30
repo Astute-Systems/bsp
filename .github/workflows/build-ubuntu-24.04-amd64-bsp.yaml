@@ -62,8 +62,10 @@ jobs:
           RELEASE_VERSION="${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_PATCH}"
           cd build
           export UBUNTU_VERSION="ubuntu-24.04"
-          echo "RUN_PACKAGE=$(ls *.run)" >> $GITHUB_ENV
-          echo "RUN_PACKAGE_NAME=$(ls *.run).${UBUNTU_VERSION}" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
+          echo "UBUNTU_VERSION=${UBUNTU_VERSION}" >> $GITHUB_ENV
+          echo "RUN_PACKAGE=$(ls *.run | head -n 1)" >> $GITHUB_ENV
+          echo "RUN_PACKAGE_NAME=$(ls *.run | head -n 1).${UBUNTU_VERSION}" >> $GITHUB_ENV
 
       - uses: actions/upload-artifact@v4
         with:
@@ -72,5 +74,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: as-pinctl-${RELEASE_VERSION}-ubuntu-24.04.deb
+          name: as-pinctl-${{ env.RELEASE_VERSION }}-ubuntu-24.04.deb
           path: build/*.deb
