@@ -58,7 +58,7 @@ jobs:
         run: |
           export OS_VERSION="${{ env.UBUNTU_VERSION }}"
           sudo ./scripts/gxa-patch-fs.sh
-          ./scripts/gxa-pack.sh
+          ./make_all
 
       - name: Execute makeself
         run: |
