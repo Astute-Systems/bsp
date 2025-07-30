@@ -1,97 +1,121 @@
-# Board Support Packages
+# Board Support Packages (BSP) for GXA
 
-## Apply GXA Configs
+## Overview
 
-The GXA specific configuration files:
+This repository contains scripts and configuration files for building, configuring, and flashing the GXA board support package (BSP) for Jetson AGX Orin platforms.
 
-* Orin-gxa-1-pinmux.dtsi
-* Orin-gxa-1-gpio-default.dtsi
-* Orin-gxa-1-padvoltage-default.dtsi
-* jetson-agx-orin-gxa-1.conf <**TBC**>
-* tegra234-gxa-1-overlay.dts <**TBC**>
+## Directory Structure
 
-:must be stored in the ./config folder.
+- `./config/`  
+  Contains board-specific configuration files, device tree overlays, and bootloader files.
+- `./scripts/`  
+  Utility scripts for patching, building, packaging, and flashing.
+- `./build/`  
+  Output directory for build artifacts and installers.
 
-Run:
+## Configuration Files
 
-```./scripts/gxa-patch-fs.sh```
+Store the following GXA-specific configuration files in the `./config` directory:
 
-: to copy the board specific configuration files to the required location.
+- `Orin-gxa-1-pinmux.dtsi`
+- `Orin-gxa-1-gpio-default.dtsi`
+- `Orin-gxa-1-padvoltage-default.dtsi`
+- `jetson-agx-orin-gxa-1.conf` *(TBC)*
+- `tegra234-gxa-1-overlay.dts` *(TBC)*
 
-**Any updates to the config files above require the patch step to be re-run. Changes to dtbs require additional steps outlined below.**
+**Note:**  
+Any updates to these files require re-running the patch step below.
 
-## Build Required Files
+## Setup & Patch
 
-It is nessecary to build the kernel and out-of-tree modules before building the device tree binaries.
-
-Run: ```./scripts/gxa-make.sh all```
-
-: to build all of the above (including dtbs).
-
-**If any changes have been made to the device tree overlay file, it will be nessecary to re-run:**
-
-```./scripts/gxa-make.sh dtbs```
-
-: to compile the overlay file into the nessecary DTB file.
-It is also possible to run:
-
-```./scripts/gxa-make.sh kernel```
-
-: to re-build the kernel; or run:
-
-```./scripts/gxa-make.sh modules```
-
-: to re-build the kernel out-of-tree modules;
-
-### Flashing
-
-Once the setup steps have been completed, connect the development machine to the GXA debug port via usb. Run:
-```./scripts/gxa-flash.sh```
-: to flash the board.
-
-### Post Install
-
-Once the unit has been booted, it will be nessecary to install the Analog Video Driver. **NB:** This could probably be
-done during the apply binaries script (or by replicating their chroot process)
+To copy board-specific configuration files to their required locations, run:
 
 ```bash
-    sudo apt install /opt/tw686x*.deb
+./scripts/gxa-patch-fs.sh
 ```
 
-### Creating the installer
+## Building
 
-Once the system has been approved for release, please run:
+Before building device tree binaries, build the kernel and out-of-tree modules:
 
-```./scripts/gxa-pack.sh```
+```bash
+./scripts/gxa-make.sh all
+```
 
-: this will create an installer called ```gxa-installer_<version>.run``` in the ```./builds/``` directory. This file can
-then be deployed to end users, to build and flash SystemX onto their GXA systems.
+If you modify the device tree overlay file, recompile the DTB:
 
-### Testing the Installer
+```bash
+./scripts/gxa-make.sh dtbs
+```
 
-## PART 1 - Development Process
+Other build options:
 
-Copy the installer file to a clean environment (fresh install / docker container/ dev environment) and run the installer
-to check that there are no missing dependencies and that the expected file structure is build correctly in a new environment.
+- Rebuild kernel:  
 
-## PART 2 - Deployment Process
+  ```bash
+  ./scripts/gxa-make.sh kernel
+  ```
 
-* Copy the installer to a **HOST** machine that will be used to build and flash SystemX to the GXA. A **Host** machine
-should be connected to the internet, and have USB access; the user should have administrative privileges via sudo. The
-installer also requires the user to have a home directory.
+- Rebuild out-of-tree modules:  
 
-* Run the ```sudo ./gxa-installer_<version>.run``` on the command-line from the directory containing the installer files.
-* During the flashing process, there are four options:
-  
-    * Build and Flash - will build the system image and flash it to the GXA. First you must connect the development machine to the GXA debug port via usb.
-    * Build now, flash later.
-    * Flash a file that was previously built.
-    * Exit the flashing program.
+  ```bash
+  ./scripts/gxa-make.sh modules
+  ```
 
-JUNE 2025
+## Flashing the Board
 
-The ```./config``` directory contains the following important files
+Connect your development machine to the GXA debug port via USB.  
+To flash the board, run:
 
-* the filesystem overlay including the necessary DTBs and bootloader files, the MOTD and the bsp-release file
-* the l4t-sources.xml which details the sources for each l4t build
-* the readme which is built as part of the installer.
+```bash
+./scripts/gxa-flash.sh
+```
+
+## Post-Install Steps
+
+After booting, install the Analog Video Driver:
+
+```bash
+sudo apt install /opt/tw686x*.deb
+```
+
+ > This step could be automated in future releases.
+
+## Creating the Installer
+
+To package the BSP for deployment, run:
+
+```bash
+./scripts/gxa-pack.sh
+```
+
+This creates an installer named `gxa-installer_<version>.run` in the `./build/` directory.
+
+## Testing the Installer
+
+### Development Process
+
+- Copy the installer to a clean environment (fresh install, Docker container, or dev environment).
+- Run the installer to verify dependencies and file structure.
+
+### Deployment Process
+
+- Copy the installer to a **host** machine with internet access, USB connectivity, and sudo privileges.
+- Run the installer:
+
+  ```bash
+  sudo ./gxa-installer_<version>.run
+  ```
+
+- During flashing, choose from:
+    - Build and Flash (requires USB connection to GXA debug port)
+    - Build now, flash later
+    - Flash a previously built image
+    - Exit
+
+## Notes
+
+- The `./config` directory contains:
+    - Filesystem overlay (DTBs, bootloader files, MOTD, bsp-release)
+    - `l4t-sources.xml` (source details for each L4T build)
+    - README (built as part of the installer)

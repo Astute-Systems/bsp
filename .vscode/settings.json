@@ -5,6 +5,7 @@
         "dtbs",
         "echoblue",
         "echored",
+        "githash",
         "makeself",
         "pinctl",
         "ROOTFS",
