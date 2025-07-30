@@ -1,5 +1,5 @@
 
-add_subdirectory(pinctl)
+add_subdirectory(as-pinctl)
 
 # store the githash in a variable0
 execute_process(

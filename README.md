@@ -12,19 +12,14 @@ This repository contains scripts and configuration files for building, configuri
   Utility scripts for patching, building, packaging, and flashing.
 - `./build/`  
   Output directory for build artifacts and installers.
+- `./src`
+  The device FTDI tool [as-pinctl](src/as-pinctl/README.md) to control recovery/reboot and debug UART
 
 ## Configuration Files
 
-Store the following GXA-specific configuration files in the `./config` directory:
+Store the following GXA-specific configuration files in the `./config` directory see ```config/l4t-overlay/jetson-agx-orin-gxa-1.conf```
 
-- `Orin-gxa-1-pinmux.dtsi`
-- `Orin-gxa-1-gpio-default.dtsi`
-- `Orin-gxa-1-padvoltage-default.dtsi`
-- `jetson-agx-orin-gxa-1.conf` *(TBC)*
-- `tegra234-gxa-1-overlay.dts` *(TBC)*
-
-**Note:**  
-Any updates to these files require re-running the patch step below.
+ > Any updates to the config file requires re-running the patch step below.
 
 ## Setup & Patch
 
