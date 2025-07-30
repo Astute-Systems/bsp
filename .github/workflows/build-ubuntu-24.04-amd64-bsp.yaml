@@ -38,6 +38,7 @@ jobs:
           cd build 
           cmake .. 
           make as-pinctl
+          cpack
           cd ..
 
       - name: Test
