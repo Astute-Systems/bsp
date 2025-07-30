@@ -1,3 +1,7 @@
+
+[![Ubuntu 22.04 Intel BSP](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-22.04-amd64-bsp.yaml/badge.svg)](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-22.04-amd64-bsp.yaml)
+[![Ubuntu 24.04 Intel BSP](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-24.04-amd64-bsp.yaml/badge.svg)](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-24.04-amd64-bsp.yaml)
+
 # Board Support Packages (BSP) for GXA
 
 ## Overview
