@@ -133,8 +133,8 @@ if [ -z "$OS_VERSION" ]; then
 fi  
 
         # --clean /opt/AstuteSys/scripts/gxa-installer-cleanup.sh \
-makeself --keep-umask --target "$TARGET_DIR" $DIR ${DIR}_${L4T_VERSION}${OS_VERSION}.run \
+makeself --keep-umask --target "$TARGET_DIR" $DIR ${DIR}-${L4T_VERSION}-${OS_VERSION}.run \
         "Astute Systems GXA-1 software installer" \
         ./scripts/gxa-installer.sh ${L4T_VERSION}
 
-echoblue "Created new release ${DIR}_${L4T_VERSION}${OS_VERSION}.run"
+echoblue "Created new release ${DIR}-${L4T_VERSION}-${OS_VERSION}.run"

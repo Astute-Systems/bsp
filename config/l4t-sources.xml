@@ -39,4 +39,20 @@
         <kernel>https://developer.download.nvidia.com/embedded/L4T/r36_Release_v4.4/sources/public_sources.tbz2</kernel>
         <l4tVersion>36.4.4</l4tVersion>
     </l4t36.4.4>
+    <l4t38.2>
+        <webpage>https://developer.nvidia.com/embedded/jetpack/downloads</webpage>
+        <toolchain>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.0/release/x-tools.tbz2</toolchain>
+        <nvidia>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.0/release/Jetson_Linux_R38.2.0_aarch64.tbz2</nvidia>
+        <rootfs>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.0/release/Tegra_Linux_Sample-Root-Filesystem_R38.2.0_aarch64.tbz2</rootfs>
+        <kernel>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.0/sources/public_sources.tbz2</kernel>
+        <l4tVersion>38.2</l4tVersion>
+    </l4t38.2>
+    <l4t38.2.1>
+        <webpage>https://developer.nvidia.com/embedded/jetpack/downloads</webpage>
+        <toolchain>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.0/release/x-tools.tbz2</toolchain>
+        <nvidia>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.1/release/Jetson_Linux_R38.2.1_aarch64.tbz2</nvidia>
+        <rootfs>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.1/release/Tegra_Linux_Sample-Root-Filesystem_R38.2.1_aarch64.tbz2</rootfs>
+        <kernel>https://developer.download.nvidia.com/embedded/L4T/r38_Release_v2.1/sources/public_sources.tbz2</kernel>
+        <l4tVersion>38.2.1</l4tVersion>
+    </l4t38.2.1>
 </l4tSources>

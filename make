@@ -20,6 +20,6 @@ mkdir -p ./archive/bsp
 
 ./scripts/gxa-pack.sh $L4T_VERSION
 
-# cp ./build/gxa-installer_$L4T_VERSION${OS_VERSION}.run ./archive/bsp/.
+# cp ./build/gxa-installer_$L4T_VERSION-${OS_VERSION}.run ./archive/bsp/.
 
 echoblue "Complete"
