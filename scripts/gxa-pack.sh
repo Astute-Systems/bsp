@@ -95,9 +95,9 @@ sed -i "s/%date%/$(date)/g" $DIR/README.txt
 sed -i "s/%date%/$(date)/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 
 # Sed replace the L4T version 
-sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/README.txt
-sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
-sed -i "s/%l4t_version%/${README_L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/motd
+sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/README.txt
+sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
+sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/motd
 
 # Sed replace the BSP version 
 sed -i "s/%release_version%/${RELEASE_VERSION}/g" $DIR/README.txt
@@ -108,7 +108,7 @@ sed -i "s/%hash%/#$GIT_HASH/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
 
 # Update MOTD with correct L4T version
 # Replace line 8 with the L4T version
-sed -i "8s/.*/  L4T Version: L4T${L4T_VERSION}/" $DIR/config/l4t-overlay/rootfs/etc/motd
+sed -i "8s/.*/  L4T Version: ${L4T_VERSION}/" $DIR/config/l4t-overlay/rootfs/etc/motd
 
 echoblue "Patching README file with L4T version and release version"
 cat  $DIR/config/l4t-overlay/rootfs/etc/bsp-release

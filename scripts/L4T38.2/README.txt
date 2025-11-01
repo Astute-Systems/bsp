@@ -20,7 +20,7 @@ Once the build environment is setup, the GXA-Flashing utility will be run. This 
 To re run the flashing tool.
 
 ```
-HOST $ cd ~/AstuteSys
+HOST $ cd /opt/AstuteSys/%l4t_version%
 HOST $ sudo ./scripts/gxa-flash.sh
 ```
 
@@ -28,7 +28,7 @@ To re-run the flashing utility helper at a later time, cd to ~/AstuteSys and run
 Alternatively, you can manually flash the target from the command line.
 
 ```
-HOST $ sudo as-pinctrl -recovery
+HOST $ sudo ./as-pinctl -recovery
 HOST $ cd ~/AstuteSys/build/l4t/Linux_for_Tegra/
 HOST $ sudo ./flash.sh jetson-agx-orin-gxa-1 mmcblk0p1
 ```
