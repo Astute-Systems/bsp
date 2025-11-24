@@ -1,0 +1,43 @@
+# Additional configuration for iMX95 Ubuntu-based image
+# This file is appended to the Yocto local.conf
+
+# Accept commercial licenses
+LICENSE_FLAGS_ACCEPTED = "commercial"
+
+# Core utilities and tools
+CORE_IMAGE_EXTRA_INSTALL += " cl-uboot cl-deploy cl-growfs-rootfs "
+CORE_IMAGE_EXTRA_INSTALL += " libubootenv-bin u-boot-compulab-env "
+CORE_IMAGE_EXTRA_INSTALL += " memtester htop iotop tmux iperf3 "
+CORE_IMAGE_EXTRA_INSTALL += " libgpiod-tools bluez5 can-utils minicom eeprom-util usbutils i2c-tools "
+CORE_IMAGE_EXTRA_INSTALL += " wireless-tools dhcpcd ifupdown wpa-supplicant ntp "
+CORE_IMAGE_EXTRA_INSTALL += " networkmanager modemmanager "
+
+# Development tools - git, cmake
+CORE_IMAGE_EXTRA_INSTALL += " git cmake "
+
+# Qt6 packages
+CORE_IMAGE_EXTRA_INSTALL += " qtbase qtbase-dev qtbase-tools qtbase-plugins "
+CORE_IMAGE_EXTRA_INSTALL += " qtdeclarative qtdeclarative-dev qtdeclarative-tools "
+CORE_IMAGE_EXTRA_INSTALL += " qtwayland qtwayland-dev qtwayland-plugins "
+
+# Package management and apt sources
+CORE_IMAGE_EXTRA_INSTALL += " apt dpkg ca-certificates "
+PACKAGE_CLASSES = "package_deb"
+EXTRA_IMAGE_FEATURES += "package-management"
+
+# Browser support
+IMAGE_INSTALL:append = " chromium-ozone-wayland"
+PREFERRED_PROVIDER_chromium = "chromium-ozone-wayland"
+
+# Remove sysvinit, use systemd
+DISTRO_FEATURES:remove = "sysvinit"
+DISTRO_FEATURES:append = " systemd"
+VIRTUAL-RUNTIME_init_manager = "systemd"
+VIRTUAL-RUNTIME_initscripts = "systemd-compat-units"
+
+# Optimize build with rm_work
+INHERIT += "rm_work"
+RM_WORK_EXCLUDE += "linux-compulab u-boot-compulab"
+
+# Set root password for development (change in production)
+EXTRA_USERS_PARAMS = "usermod -P root root;"

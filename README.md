@@ -2,22 +2,39 @@
 [![Ubuntu 22.04 Intel BSP](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-22.04-amd64-bsp.yaml/badge.svg)](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-22.04-amd64-bsp.yaml)
 [![Ubuntu 24.04 Intel BSP](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-24.04-amd64-bsp.yaml/badge.svg)](https://github.com/Astute-Systems/bsp/actions/workflows/build-ubuntu-24.04-amd64-bsp.yaml)
 
-# Board Support Packages (BSP) for GXA
+# Board Support Packages (BSP)
 
 ## Overview
 
-This repository contains scripts and configuration files for building, configuring, and flashing the GXA board support package (BSP) for Jetson AGX Orin platforms.
+This repository contains scripts and configuration files for building, configuring, and flashing board support packages (BSP) for multiple platforms:
+
+- **GXA** (Jetson AGX Orin platforms) - NVIDIA L4T-based BSP
+- **iMX95** (CompuLab UCM-iMX95) - Yocto-based Ubuntu BSP
 
 ## Directory Structure
 
+- `./yocto/`  
+  iMX95 Yocto-based BSP for CompuLab UCM-iMX95. See [yocto/README.md](yocto/README.md) for details.
 - `./config/`  
-  Contains board-specific configuration files, device tree overlays, and bootloader files.
+  GXA board-specific configuration files, device tree overlays, and bootloader files.
 - `./scripts/`  
-  Utility scripts for patching, building, packaging, and flashing.
+  GXA utility scripts for patching, building, packaging, and flashing.
 - `./build/`  
   Output directory for build artifacts and installers.
 - `./src`
   The device FTDI tool [as-pinctl](src/as-pinctl/README.md) to control recovery/reboot and debug UART
+
+## Supported Platforms
+
+### iMX95 (CompuLab UCM-iMX95)
+
+For building Ubuntu-based images for the iMX95 platform:
+- See the [yocto/README.md](yocto/README.md) for complete documentation
+- Quick start: `cd yocto && ./build`
+
+---
+
+### GXA (Jetson AGX Orin)
 
 ## Configuration Files
 
