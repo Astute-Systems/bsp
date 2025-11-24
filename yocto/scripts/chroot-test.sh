@@ -68,6 +68,7 @@ echo ""
 
 # Create temporary mount point
 MOUNT_POINT="/tmp/imx95-rootfs-$$"
+TEMP_IMG="/tmp/imx95-temp-$$.img"
 LOOP_DEVICE=""
 
 cleanup() {
@@ -95,6 +96,11 @@ cleanup() {
         losetup -d "$LOOP_DEVICE" 2>/dev/null || true
     fi
     
+    # Remove temporary image file
+    if [ -f "${TEMP_IMG}" ]; then
+        rm -f "${TEMP_IMG}" || true
+    fi
+    
     # Remove mount point
     if [ -d "${MOUNT_POINT}" ]; then
         rmdir "${MOUNT_POINT}" 2>/dev/null || true
@@ -112,7 +118,6 @@ echoblue "Decompressing and mounting image..."
 echoyellow "This may take a few minutes..."
 
 # Decompress and find the rootfs partition
-TEMP_IMG="/tmp/imx95-temp-$$.img"
 zstd -dc "${IMAGE_FILE}" > "${TEMP_IMG}"
 
 # Find the rootfs partition (usually partition 2 or 3)
@@ -124,7 +129,6 @@ OFFSET=$(echo "$PARTITION_INFO" | grep "^${TEMP_IMG}" | awk '{if ($4 ~ /^start=/
 
 if [ -z "$OFFSET" ]; then
     echored "Error: Could not determine rootfs partition offset"
-    rm -f "${TEMP_IMG}"
     exit 1
 fi
 

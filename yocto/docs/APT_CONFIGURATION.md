@@ -67,7 +67,7 @@ do_install() {
     install -m 0644 ${WORKDIR}/sources.list ${D}${sysconfdir}/apt/sources.list
 }
 
-FILES_${PN} = "${sysconfdir}/apt/sources.list"
+FILES:${PN} = "${sysconfdir}/apt/sources.list"
 ```
 
 Create `recipes-core/custom-apt-sources/files/sources.list`:
