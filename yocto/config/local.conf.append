@@ -21,7 +21,7 @@ CORE_IMAGE_EXTRA_INSTALL += " qtdeclarative qtdeclarative-dev qtdeclarative-tool
 CORE_IMAGE_EXTRA_INSTALL += " qtwayland qtwayland-dev qtwayland-plugins "
 
 # Package management and apt sources
-CORE_IMAGE_EXTRA_INSTALL += " apt dpkg ca-certificates "
+CORE_IMAGE_EXTRA_INSTALL += " apt dpkg ca-certificates apt-sources motd "
 PACKAGE_CLASSES = "package_deb"
 EXTRA_IMAGE_FEATURES += "package-management"
 

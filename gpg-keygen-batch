@@ -1,0 +1,11 @@
+%echo Generating a basic OpenPGP key
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
+Name-Real: Astute Systems Package Repository
+Name-Email: packages@astutesys.com
+Expire-Date: 2y
+%no-protection
+%commit
+%echo done

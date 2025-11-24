@@ -1,0 +1,18 @@
+# Astute Systems APT Repository Configuration
+# This file configures additional APT repositories for the Astute Systems BSP
+
+# Main Astute Systems repository (replace with your actual repository)
+# deb [signed-by=/etc/apt/trusted.gpg.d/astute.gpg] https://packages.astutesys.com/ubuntu jammy main
+# deb-src [signed-by=/etc/apt/trusted.gpg.d/astute.gpg] https://packages.astutesys.com/ubuntu jammy main
+
+# Development repository (optional)
+# deb [signed-by=/etc/apt/trusted.gpg.d/astute.gpg] https://packages.astutesys.com/ubuntu jammy-dev main
+
+# Local repository (for on-site package management)
+# deb [trusted=yes] file:///opt/astute/packages ./
+
+# Note: Uncomment and configure the appropriate repositories before deploying to production
+# This file is installed to /etc/apt/sources.list.d/astute.list in the final image
+
+# Example configuration for BSP-related packages:
+# deb [signed-by=/etc/apt/trusted.gpg.d/astute.gpg] https://packages.astutesys.com/ubuntu jammy astute-bsp
