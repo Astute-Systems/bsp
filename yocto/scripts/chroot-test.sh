@@ -125,7 +125,22 @@ PARTITION_INFO=$(sfdisk -d "${TEMP_IMG}" 2>/dev/null || true)
 
 # Calculate the offset for the rootfs partition
 # Look for the largest partition which is typically the rootfs
-OFFSET=$(echo "$PARTITION_INFO" | grep "^${TEMP_IMG}" | awk '{if ($4 ~ /^start=/) {gsub("start=","",$4); gsub(",","",$4); print $4*512}}' | sort -n | tail -1)
+# Parse the partition info line by line:
+# 1. Filter lines starting with the image path
+# 2. Extract the "start=" value and remove comma
+# 3. Convert to bytes (multiply by 512)
+# 4. Sort numerically and take the largest
+OFFSET=$(echo "$PARTITION_INFO" | \
+    grep "^${TEMP_IMG}" | \
+    awk '{
+        if ($4 ~ /^start=/) {
+            gsub("start=", "", $4);
+            gsub(",", "", $4);
+            print $4 * 512
+        }
+    }' | \
+    sort -n | \
+    tail -1)
 
 if [ -z "$OFFSET" ]; then
     echored "Error: Could not determine rootfs partition offset"

@@ -66,15 +66,15 @@ if [ ! -d ".repo" ]; then
     echoblue "Adding CompuLab BSP layer..."
     mkdir -p .repo/local_manifests
     
-    cat > .repo/local_manifests/meta-bsp-imx95.xml << 'EOF'
+    cat > .repo/local_manifests/meta-bsp-imx95.xml << EOF
 <?xml version="1.0" encoding="UTF-8" ?>
  <manifest>
  <remote fetch="https://github.com/compulab-yokneam" name="compulab"/>
 
-    <project name="meta-compulab" remote="compulab" revision="a9ef2a47c3ca56f985174b6781882db457bd389f" path="sources/meta-compulab"/>
-    <project name="meta-compulab-bsp" remote="compulab" revision="3a9724ca2f7d3a55cef3a648b814c5b26bd18c86" path="sources/meta-compulab-bsp"/>
-    <project name="meta-compulab-uefi" remote="compulab" revision="d9646b4b9ae785f3c36e90a375bc1059b8baf580" path="sources/meta-compulab-uefi"/>
-    <project name="meta-bsp-imx95" remote="compulab" revision="scarthgap-6.6.36-EVAL-UCM-iMX95-1.0" path="sources/meta-bsp-imx95" >
+    <project name="meta-compulab" remote="compulab" revision="${META_COMPULAB_REV}" path="sources/meta-compulab"/>
+    <project name="meta-compulab-bsp" remote="compulab" revision="${META_COMPULAB_BSP_REV}" path="sources/meta-compulab-bsp"/>
+    <project name="meta-compulab-uefi" remote="compulab" revision="${META_COMPULAB_UEFI_REV}" path="sources/meta-compulab-uefi"/>
+    <project name="meta-bsp-imx95" remote="compulab" revision="${META_BSP_IMX95_REV}" path="sources/meta-bsp-imx95" >
         <linkfile src="tools/compulab-setup-env" dest="compulab-setup-env"/>
     </project>
 
