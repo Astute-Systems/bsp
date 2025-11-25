@@ -47,6 +47,7 @@ cd /path/to/bsp/yocto
 ```
 
 The build process will:
+
 1. Initialize the Yocto repo with NXP's i.MX layers
 2. Add CompuLab's BSP layers
 3. Configure the build environment
@@ -83,6 +84,7 @@ yocto/
 ```
 
 After building, a `build/` directory will be created containing:
+
 ```
 build/
 └── yocto/
@@ -111,10 +113,15 @@ sync
 ```
 
 **Boot from SD Card:**
+
 1. Power off the board
 2. Insert the SD card
 3. Short the alt. boot jumper
 4. Power on the board
+5. Login with:
+   - **Username**: `astute`
+   - **Password**: `astute`
+   - Or use root account (password: `root`)
 
 ### Method 2: UUU Flashing (Direct to eMMC)
 
@@ -129,6 +136,7 @@ sudo uuu -v -b emmc_all imx-boot-tagged imx-image-full-ucm-imx95*.wic.zst
 ```
 
 **Prepare Board for UUU Flashing:**
+
 1. Power off the board
 2. Connect USB cable from host to SoM Serial Download microUSB port
 3. Short the SDP boot jumper
@@ -143,12 +151,14 @@ sudo ./scripts/chroot-test.sh
 ```
 
 This script:
+
 - Mounts the built image
 - Sets up QEMU ARM emulation
 - Allows you to enter the filesystem as if you were on the target hardware
 - Useful for verifying installed packages and configurations
 
 Example test commands inside the chroot:
+
 ```bash
 git --version
 cmake --version
@@ -173,6 +183,7 @@ CORE_IMAGE_EXTRA_INSTALL += " your-package-name "
 ### Modifying Configuration
 
 Edit `config/imx95-build.conf` to change:
+
 - Build directories
 - Machine configuration
 - Distro settings
@@ -181,6 +192,7 @@ Edit `config/imx95-build.conf` to change:
 ### Using Different Image Recipes
 
 The default image is `imx-image-full`. Other available images include:
+
 - `imx-image-core`: Minimal console image
 - `imx-image-multimedia`: Includes multimedia codecs
 - `imx-image-desktop`: Full desktop environment
@@ -200,6 +212,7 @@ If you modify the configuration:
 ```
 
 For small changes (like adding a package), you can rebuild without cleaning:
+
 ```bash
 ./build
 ```
@@ -210,14 +223,15 @@ For small changes (like adding a package), you can rebuild without cleaning:
 
 - **NXP i.MX BSP**: Kernel 6.6.36, L4T version per manifest
 - **CompuLab Layers**:
-  - `meta-compulab`: Core CompuLab layer
-  - `meta-compulab-bsp`: Board-specific configurations
-  - `meta-compulab-uefi`: UEFI support
-  - `meta-bsp-imx95`: UCM-iMX95 specific layer
+    - `meta-compulab`: Core CompuLab layer
+    - `meta-compulab-bsp`: Board-specific configurations
+    - `meta-compulab-uefi`: UEFI support
+    - `meta-bsp-imx95`: UCM-iMX95 specific layer
 
 ### Included Packages
 
 #### Development Tools
+
 - git
 - cmake
 - gcc/g++
@@ -225,12 +239,14 @@ For small changes (like adding a package), you can rebuild without cleaning:
 - pkg-config
 
 #### Qt6 Framework
+
 - qtbase (core Qt6 libraries)
 - qtdeclarative (QML support)
 - qtwayland (Wayland integration)
 - Qt development tools
 
 #### System Utilities
+
 - NetworkManager/ModemManager
 - Bluetooth utilities (bluez5)
 - CAN utilities
@@ -239,6 +255,7 @@ For small changes (like adding a package), you can rebuild without cleaning:
 - Memory testing tools
 
 #### Package Management
+
 - APT package manager
 - DPKG for .deb packages
 - Configured apt sources for updates
@@ -246,21 +263,25 @@ For small changes (like adding a package), you can rebuild without cleaning:
 ## Troubleshooting
 
 ### Build Fails with "Fetcher failure"
+
 - Check your internet connection
 - Some corporate networks block git:// protocol; use https:// instead
 - Try: `git config --global url."https://".insteadOf git://`
 
 ### Out of Disk Space
+
 - Clean old builds: `./build clean`
 - Yocto uses rm_work to save space, but builds still require substantial storage
 - Consider using a separate partition with 100GB+ free space
 
 ### Build Errors with Qt6
+
 - Ensure you're using the scarthgap branch
 - Qt6 packages may have specific build dependencies
 - Check build logs in `build/yocto/build-ucm-imx95/tmp/work/`
 
 ### QEMU Chroot Test Fails
+
 - Install qemu-user-static: `sudo apt-get install qemu-user-static`
 - Ensure you're running as root: `sudo ./scripts/chroot-test.sh`
 - Check that the image was built successfully
@@ -275,6 +296,7 @@ For small changes (like adding a package), you can rebuild without cleaning:
 ## License
 
 This BSP configuration follows the licensing of the underlying layers:
+
 - NXP BSP components: Various (see individual layer LICENSE files)
 - CompuLab BSP: MIT (see CompuLab repository)
 - Yocto Project: Various open source licenses

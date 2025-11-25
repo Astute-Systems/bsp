@@ -40,4 +40,9 @@ INHERIT += "rm_work"
 RM_WORK_EXCLUDE += "linux-compulab u-boot-compulab"
 
 # Set root password for development (change in production)
-EXTRA_USERS_PARAMS = "usermod -P root root;"
+# Add default user 'astute' with password 'astute'
+EXTRA_USERS_PARAMS = "\
+    usermod -P root root; \
+    useradd -m -G sudo,video,audio,dialout,plugdev,users -s /bin/bash astute; \
+    usermod -P astute astute; \
+"
