@@ -8,18 +8,24 @@ This directory contains the bitbake recipe and configuration files to include cu
 meta-astute/
 ├── conf/
 │   └── layer.conf                          # Layer configuration
-└── recipes-core/
-    ├── apt-sources/
-    │   ├── apt-sources_1.0.bb              # APT sources bitbake recipe
-    │   └── files/
-    │       ├── astute.list                 # APT repository configuration
-    │       ├── astute.gpg                  # GPG public key
-    │       └── apt.conf                    # APT configuration settings
-    └── motd/
-        ├── motd_1.0.bb                     # MOTD bitbake recipe
+├── recipes-core/
+│   ├── apt-sources/
+│   │   ├── apt-sources_1.0.bb              # APT sources bitbake recipe
+│   │   └── files/
+│   │       ├── astute.list                 # APT repository configuration
+│   │       ├── astute.gpg                  # GPG public key
+│   │       └── apt.conf                    # APT configuration settings
+│   └── motd/
+│       ├── motd_1.0.bb                     # MOTD bitbake recipe
+│       └── files/
+│           ├── motd                        # BushNET banner template
+│           └── update-motd.sh              # Dynamic MOTD updater script
+└── recipes-graphics/
+    └── wallpaper/
+        ├── wallpaper_1.0.bb                # Wallpaper bitbake recipe
+        ├── README.md                       # Wallpaper documentation
         └── files/
-            ├── motd                        # BushNET banner template
-            └── update-motd.sh              # Dynamic MOTD updater script
+            └── Wallpaper.png               # BushNET desktop wallpaper (1536x1024)
 ```
 
 ## Configuration
@@ -54,7 +60,16 @@ The recipe is automatically included when you build your image. The APT sources 
 
 ## Usage in Built Image
 
-After the image boots, you will see the BushNET MOTD banner with system information.
+After the image boots, you will see the BushNET MOTD banner with system information, and the BushNET wallpaper will be set as the desktop background.
+
+### Wallpaper
+
+The BushNET wallpaper (1536x1024) is installed to:
+
+- `/usr/share/backgrounds/bushnet-wallpaper.png` - Standard backgrounds location
+- `/usr/share/pixmaps/bushnet-wallpaper.png` - Standard pixmaps location
+
+For Weston (Wayland compositor), the wallpaper is automatically configured in `/etc/xdg/weston/weston.ini`.
 
 ### APT Repository Usage
 
