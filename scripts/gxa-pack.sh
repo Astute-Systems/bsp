@@ -17,6 +17,16 @@ README_L4T_VERSION="L4T${L4T_VERSION}"
 
 source ./config/gxa-build.conf
 
+# Select the overlay directory to patch based on L4T generation.
+# r36.x uses config/l4t-overlay; r39+ uses config/l4t-overlay-r39.
+L4T_MAJOR=${L4T_VERSION%%.*}
+if [ "$L4T_MAJOR" -ge 39 ] 2>/dev/null && [ -d "config/l4t-overlay-r39" ]; then
+    OVERLAY_REL="config/l4t-overlay-r39"
+else
+    OVERLAY_REL="config/l4t-overlay"
+fi
+echoblue "gxa-pack: overlay=$OVERLAY_REL"
+
 #######################################################
 #
 # SETUP THE PACKAGE DIRECTORY
@@ -67,7 +77,7 @@ cp -p scripts/gxa-init-build-machine.sh $DIR/scripts
 cp -p scripts/gxa-patch-fs.sh $DIR/scripts
 cp -p scripts/gxa-flash.sh $DIR/scripts
 cp -p scripts/gxa-utils.sh $DIR/scripts
-cp -pr scripts/${README_L4T_VERSION}/etc $DIR/config/l4t-overlay/rootfs
+cp -pr scripts/${README_L4T_VERSION}/etc $DIR/${OVERLAY_REL}/rootfs
 cp -p scripts/${README_L4T_VERSION}/README.txt $DIR/.
 
 #######################################################
@@ -92,30 +102,30 @@ RELEASE_VERSION="${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_PATCH}"
 # Sed replace %data% with the current date
 sed -i "s/%year%/$(date +%Y)/g" $DIR/LICENSE
 sed -i "s/%date%/$(date)/g" $DIR/README.txt
-sed -i "s/%date%/$(date)/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
+sed -i "s/%date%/$(date)/g" $DIR/${OVERLAY_REL}/rootfs/etc/bsp-release
 
 # Sed replace the L4T version 
 sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/README.txt
-sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
-sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/motd
+sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/${OVERLAY_REL}/rootfs/etc/bsp-release
+sed -i "s/%l4t_version%/${L4T_VERSION}/g" $DIR/${OVERLAY_REL}/rootfs/etc/motd
 
 # Sed replace the BSP version 
 sed -i "s/%release_version%/${RELEASE_VERSION}/g" $DIR/README.txt
-sed -i "s/%release_version%/${RELEASE_VERSION}/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
+sed -i "s/%release_version%/${RELEASE_VERSION}/g" $DIR/${OVERLAY_REL}/rootfs/etc/bsp-release
 # Sed replace the git hash with %hash%
 sed -i "s/%hash%/$GIT_HASH/g" $DIR/README.txt
-sed -i "s/%hash%/#$GIT_HASH/g" $DIR/config/l4t-overlay/rootfs/etc/bsp-release
+sed -i "s/%hash%/#$GIT_HASH/g" $DIR/${OVERLAY_REL}/rootfs/etc/bsp-release
 
 # Update MOTD with correct L4T version
 # Replace line 8 with the L4T version
-sed -i "8s/.*/  L4T Version: ${L4T_VERSION}/" $DIR/config/l4t-overlay/rootfs/etc/motd
+sed -i "8s/.*/  L4T Version: ${L4T_VERSION}/" $DIR/${OVERLAY_REL}/rootfs/etc/motd
 
 echoblue "Patching README file with L4T version and release version"
-cat  $DIR/config/l4t-overlay/rootfs/etc/bsp-release
+cat  $DIR/${OVERLAY_REL}/rootfs/etc/bsp-release
 echoblue "Patching README file with L4T version and release version"
 cat  $DIR/README.txt
 echoblue "Patching MOTD file with L4T version"
-cat  $DIR/config/l4t-overlay/rootfs/etc/motd
+cat  $DIR/${OVERLAY_REL}/rootfs/etc/motd
 
 #######################################################
 #
@@ -128,9 +138,16 @@ echoblue "Creating the GXA Installer package"
 TARGET_DIR="/opt/AstuteSys/${L4T_VERSION}"
 
 # Get enc OS_VERSION
+# r36.x targets Ubuntu 22.04; r39+ targets Ubuntu 24.04. Callers may still
+# override via the OS_VERSION env var.
 if [ -z "$OS_VERSION" ]; then
-  OS_VERSION="ubuntu-22.04"
-fi  
+  L4T_MAJOR_OSV=${L4T_VERSION%%.*}
+  if [ "$L4T_MAJOR_OSV" -ge 39 ] 2>/dev/null; then
+    OS_VERSION="ubuntu-24.04"
+  else
+    OS_VERSION="ubuntu-22.04"
+  fi
+fi
 
         # --clean /opt/AstuteSys/scripts/gxa-installer-cleanup.sh \
 makeself --keep-umask --target "$TARGET_DIR" $DIR ${DIR}-${L4T_VERSION}-${OS_VERSION}.run \

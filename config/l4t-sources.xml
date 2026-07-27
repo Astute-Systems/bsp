@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <l4tSources>
     <versions>
-        <number_of_versions>4</number_of_versions>
+        <number_of_versions>5</number_of_versions>
         <version>l4t36.3</version>
         <version>l4t36.4</version>        
         <version>l4t36.4.3</version>
         <version>l4t36.4.4</version>
+        <version>l4t39.2</version>
     </versions>
     <l4t36.3>
         <webpage>https://developer.nvidia.com/embedded/jetson-linux-r363</webpage>
@@ -39,4 +40,12 @@
         <kernel>https://developer.download.nvidia.com/embedded/L4T/r36_Release_v4.4/sources/public_sources.tbz2</kernel>
         <l4tVersion>36.4.4</l4tVersion>
     </l4t36.4.4>
+    <l4t39.2>
+        <webpage>https://developer.nvidia.com/embedded/jetson-linux-r392</webpage>
+        <toolchain>https://developer.nvidia.com/downloads/embedded/L4T/r38_Release_v2.0/release/x-tools.tbz2</toolchain>
+        <nvidia>https://developer.nvidia.com/downloads/embedded/L4T/r39_Release_v2.0/release/Jetson_Linux_R39.2.0_aarch64.tbz2</nvidia>
+        <rootfs>https://developer.nvidia.com/downloads/embedded/L4T/r39_Release_v2.0/release/Tegra_Linux_Sample-Root-Filesystem_R39.2.0_aarch64.tbz2</rootfs>
+        <kernel>https://developer.nvidia.com/downloads/embedded/L4T/r39_Release_v2.0/sources/public_sources.tbz2</kernel>
+        <l4tVersion>39.2</l4tVersion>
+    </l4t39.2>
 </l4tSources>

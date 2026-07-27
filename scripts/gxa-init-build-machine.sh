@@ -126,13 +126,38 @@ download_and_extract $KERNEL $SOURCES
 
 TOOLCHAIN_FILENAME=$(basename $TOOLCHAIN)
 
-COMPILER=$(tar -xvf $SOURCES/$TOOLCHAIN_FILENAME -C $KERNEL_SOURCES | head -n 1 | cut -d '/' -f 1)
+# Detect toolchain layout. Two shapes are supported:
+#   r36.x: aarch64--glibc--stable-2022.08-1.tar.bz2 unpacks to
+#          <top>/bin/aarch64-buildroot-linux-gnu-*
+#   r39.2+: x-tools.tbz2 unpacks to x-tools/aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-*
 if [ ! -f $FLAGS/toolchain_check ]; then
   echogreen "Extracting $TOOLCHAIN_FILENAME"
   tar -xf $SOURCES/$TOOLCHAIN_FILENAME -C $KERNEL_SOURCES
 
-  # Replace the COMPILER value in gxa-build.conf
+  # Find the tool-prefix directory that contains a bin/ with gcc.
+  # Search two levels deep to cover both r36 (flat) and r39 (x-tools/<triplet>) layouts.
+  TOOL_BIN=$(find "$KERNEL_SOURCES" -maxdepth 3 -type f -name 'aarch64-*-gcc' 2>/dev/null | head -n1)
+  if [ -z "$TOOL_BIN" ]; then
+    echored "Failed to detect aarch64 cross compiler under $KERNEL_SOURCES"
+    exit 1
+  fi
+  # /path/to/KERNEL_SOURCES/<COMPILER_ROOT>/bin/<COMPILER_PREFIX>gcc
+  COMPILER_BIN_DIR=$(dirname "$TOOL_BIN")           # .../<COMPILER_ROOT>/bin
+  COMPILER_ROOT_ABS=$(dirname "$COMPILER_BIN_DIR")  # .../<COMPILER_ROOT>
+  COMPILER_ROOT=${COMPILER_ROOT_ABS#$KERNEL_SOURCES/}
+  COMPILER_PREFIX=$(basename "$TOOL_BIN")
+  COMPILER_PREFIX=${COMPILER_PREFIX%gcc}            # strip trailing 'gcc'
+  # Backward-compat: preserve old COMPILER for r36 flat layout (=top-level dir)
+  COMPILER=$(echo "$COMPILER_ROOT" | cut -d/ -f1)
+
+  echogreen "Detected toolchain:"
+  echogreen "  COMPILER=$COMPILER"
+  echogreen "  COMPILER_ROOT=$COMPILER_ROOT"
+  echogreen "  COMPILER_PREFIX=$COMPILER_PREFIX"
+
   sed -i "/^COMPILER=/c\COMPILER=$COMPILER" $CONFIG/gxa-build.conf
+  sed -i "/^COMPILER_ROOT=/c\COMPILER_ROOT=$COMPILER_ROOT" $CONFIG/gxa-build.conf
+  sed -i "/^COMPILER_PREFIX=/c\COMPILER_PREFIX=$COMPILER_PREFIX" $CONFIG/gxa-build.conf
 
   touch $FLAGS/toolchain_check
 fi

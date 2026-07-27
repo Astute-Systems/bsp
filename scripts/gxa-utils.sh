@@ -47,7 +47,6 @@ function download_and_extract() {
     sudo -u $SUDO_USER wget ${WGET_EXTRA_ARGS} -O $SOURCES/$filename $url
   else
     echo "File $filename already exists, skipping download"
-    return 0
   fi
   # Extract the file to the destination directory
   if [[ $filename == *.tar.gz || $filename == *.tgz ]]; then

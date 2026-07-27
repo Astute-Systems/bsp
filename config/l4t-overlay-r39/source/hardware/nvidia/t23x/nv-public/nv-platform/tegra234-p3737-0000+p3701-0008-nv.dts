@@ -1,0 +1,25 @@
+// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-FileCopyrightText: Copyright (c) 2023-2024, NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
+//
+// GXA-1 override: reasserts serial aliases after nv-common re-maps them.
+
+/dts-v1/;
+
+#include "tegra234-p3737-0000+p3701-0008.dts"
+#include "tegra234-p3737-0000+p3701-xxxx-nv-common.dtsi"
+#include "tegra234-p3701-0008.dtsi"
+
+/ {
+	aliases {
+		/* GXA-1 keeps r36 serial numbering:
+		 *   serial1 = uarta   (debug console header)
+		 *   serial2 = uarte
+		 *   serial3 = uartb
+		 *   serial4 = uartd
+		 */
+		serial1 = "/bus@0/serial@3100000";
+		serial2 = "/bus@0/serial@3140000";
+		serial3 = "/bus@0/serial@3110000";
+		serial4 = "/bus@0/serial@3130000";
+	};
+};

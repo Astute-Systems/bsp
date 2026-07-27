@@ -23,13 +23,61 @@ fi
 
 #######################################################
 #
+# PARSE ARGS
+#
+#######################################################
+# Positional: <L4T_VERSION>
+# Flags:
+#   --no-flash    build the image but do not touch a target device
+#   --yes / -y    non-interactive; skip the "press any key" gate
+#
+FLASH_ARGS=""
+ASSUME_YES=0
+L4T_VERSION=""
+for arg in "$@"; do
+  case "$arg" in
+    --no-flash|--build-only) FLASH_ARGS="--no-flash" ;;
+    --flash-only)            FLASH_ARGS="--flash-only" ;;
+    --yes|-y)                ASSUME_YES=1 ;;
+    -*)
+      echo "Unknown option: $arg"
+      exit 1
+      ;;
+    *)
+      if [ -z "$L4T_VERSION" ]; then
+        L4T_VERSION="$arg"
+      fi
+      ;;
+  esac
+done
+
+if [ -z "$L4T_VERSION" ]; then
+  echo "Usage: $0 <L4T_VERSION> [--no-flash] [--yes]"
+  exit 1
+fi
+
+#######################################################
+#
 # CREATE LINK IN HOME DIRECTORY
 #
 #######################################################
 
-# Remove link if it exists
-if [ -L /home/${SUDO_USER}/AstuteSys ]; then
-   unlink /home/${SUDO_USER}/AstuteSys
+# When invoked via `sudo`, SUDO_USER is set to the invoking user. When invoked
+# directly as root (or via `sudo bash -c ...` from a root shell), SUDO_USER
+# may be empty or literally "root", in which case there is no meaningful
+# home to link into. Fall back to skipping the symlink in that case.
+TARGET_USER="${SUDO_USER:-root}"
+TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
+
+if [ -n "$TARGET_HOME" ] && [ -d "$TARGET_HOME" ] && [ "$TARGET_USER" != "root" ]; then
+  # Remove link if it exists
+  if [ -L "$TARGET_HOME/AstuteSys" ]; then
+    unlink "$TARGET_HOME/AstuteSys"
+  fi
+  echoblue "GXA Installer: Creating symlink $TARGET_HOME/AstuteSys -> /opt/AstuteSys/${L4T_VERSION}"
+  ln -s "/opt/AstuteSys/${L4T_VERSION}" "$TARGET_HOME/AstuteSys"
+else
+  echoblue "GXA Installer: skipping user home symlink (no non-root invoking user)"
 fi
 
 #######################################################
@@ -41,16 +89,6 @@ source ./config/gxa-build.conf
 
 #######################################################
 #
-# ADDRESS ARGS
-#
-#######################################################
-# Check for arguments
-L4T_VERSION=$1
-echoblue "GXA Installer: Creating symlink in home directory to /opt/AstuteSys/${L4T_VERSION}"
-ln -s /opt/AstuteSys/${L4T_VERSION} /home/${SUDO_USER}/AstuteSys
-
-#######################################################
-#
 # Cat the README.txt file and wite for user input
 #
 #######################################################
@@ -58,7 +96,9 @@ cat ./README.txt
 echo ""
 echored "NOTE: Please ensure you have an internet connection before proceeding"
 echo ""
-read -p "Press any key to continue (CTRL+C to cancel)"
+if [ "$ASSUME_YES" -ne 1 ]; then
+  read -p "Press any key to continue (CTRL+C to cancel)"
+fi
 
 # #######################################################
 # #
@@ -74,13 +114,29 @@ read -p "Press any key to continue (CTRL+C to cancel)"
 #
 #######################################################
 
+# The install tree at /opt/AstuteSys/${L4T_VERSION} was extracted by makeself
+# as root, so everything is currently owned by root. The downstream scripts
+# (gxa-init-build-machine.sh, gxa-utils.sh) intentionally use
+# `sudo -u ${SUDO_USER}` to keep build artifacts owned by the invoking user
+# so they can be edited without sudo after the install. For that to work,
+# the target tree needs to be user-owned before those scripts run.
+if [ -n "$TARGET_USER" ] && [ "$TARGET_USER" != "root" ]; then
+  echoblue "GXA Installer: chown -R $TARGET_USER /opt/AstuteSys/${L4T_VERSION}"
+  chown -R "$TARGET_USER":"$TARGET_USER" "/opt/AstuteSys/${L4T_VERSION}"
+fi
+
 # Install the as-pinctl command onto the HOST machine
-cp ./as-pinctl /usr/bin
+# (skipped for --no-flash runs; we do not touch USB hardware in that mode)
+if [ "$FLASH_ARGS" != "--no-flash" ]; then
+  cp ./as-pinctl /usr/bin
+fi
+
 # Run the install scripts
 echoblue "GXA Installer: Downloading and extracting sources"
 ./scripts/gxa-init-build-machine.sh prod $L4T_VERSION
 echoblue "GXA Installer: Patching filesystem"
-./scripts/gxa-patch-fs.sh prod
+./scripts/gxa-patch-fs.sh prod $L4T_VERSION
 echoblue "GXA Installer: Preparing to flash"
-./scripts/gxa-flash.sh $FLASH
+./scripts/gxa-flash.sh $FLASH_ARGS
 echoblue "GXA Installer: Complete, ~/AstuteSys/scripts/gxa-flash.sh to reenter the flash tool"
+
