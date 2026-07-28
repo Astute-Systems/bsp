@@ -58,14 +58,37 @@ function export_board_spec() {
 }
 
 # Ensure as-pinctl is available on the host for any hardware-touching mode.
+# Search order:
+#   1. /usr/bin/as-pinctl                  (already installed)
+#   2. $PROJECT_ROOT/as-pinctl             (bundled next to the installer in
+#                                           /opt/AstuteSys/<ver>/ -- PROD)
+#   3. $SOURCES/bin/as-pinctl              (built in-tree from the BSP repo -- DEV)
+#   4. rebuild from source via gxa-make.sh (DEV only; gxa-make.sh is not
+#                                           shipped in the PROD installer)
 function require_as_pinctl() {
-  if [ ! -f /usr/bin/as-pinctl ]; then
-    echo "as-pinctl not found."
-    if [ ! -f "$SOURCES/bin/as-pinctl" ]; then
-      "$PROJECT_ROOT/scripts/gxa-make.sh" as-pinctl
-    fi
-    sudo cp "$SOURCES/bin/as-pinctl" /usr/bin/
+  if [ -f /usr/bin/as-pinctl ]; then
+    return 0
   fi
+  echo "as-pinctl not found in /usr/bin."
+  local src=""
+  if [ -f "$PROJECT_ROOT/as-pinctl" ]; then
+    src="$PROJECT_ROOT/as-pinctl"
+  elif [ -f "$SOURCES/bin/as-pinctl" ]; then
+    src="$SOURCES/bin/as-pinctl"
+  elif [ -x "$PROJECT_ROOT/scripts/gxa-make.sh" ]; then
+    # DEV build tree: rebuild from source.
+    "$PROJECT_ROOT/scripts/gxa-make.sh" as-pinctl
+    src="$SOURCES/bin/as-pinctl"
+  else
+    echored "as-pinctl is missing and cannot be rebuilt from this tree."
+    echored "Expected one of:"
+    echored "  /usr/bin/as-pinctl"
+    echored "  $PROJECT_ROOT/as-pinctl   (bundled with the installer)"
+    echored "  $SOURCES/bin/as-pinctl    (in-tree DEV build)"
+    exit 1
+  fi
+  echoblue "GXA-Flash: staging as-pinctl from $src -> /usr/bin/"
+  sudo cp "$src" /usr/bin/
 }
 
 ##############################

@@ -125,11 +125,11 @@ if [ -n "$TARGET_USER" ] && [ "$TARGET_USER" != "root" ]; then
   chown -R "$TARGET_USER":"$TARGET_USER" "/opt/AstuteSys/${L4T_VERSION}"
 fi
 
-# Install the as-pinctl command onto the HOST machine
-# (skipped for --no-flash runs; we do not touch USB hardware in that mode)
-if [ "$FLASH_ARGS" != "--no-flash" ]; then
-  cp ./as-pinctl /usr/bin
-fi
+# Note: as-pinctl is NOT copied to /usr/bin here. Staging to /usr/bin is a
+# host-side side effect that only makes sense when we are about to touch USB
+# hardware. gxa-flash.sh's require_as_pinctl() handles that lazily, pulling
+# from the bundled $PROJECT_ROOT/as-pinctl on first use. This keeps
+# --no-flash / --build-only runs free of side effects on the host.
 
 # Run the install scripts
 echoblue "GXA Installer: Downloading and extracting sources"
