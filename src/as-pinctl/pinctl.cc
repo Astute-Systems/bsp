@@ -150,6 +150,15 @@ int main(int argc, char **argv)
 
     close(ftdi);
 
+    // Re-attach ftdi_sio so /dev/ttyUSB0 comes back for serial console use.
+    // Skip this in modes where we've deliberately strapped the SoC (recovery)
+    // or left it held in reset (shutdown): re-binding the kernel driver
+    // triggers a chip reset that briefly glitches CBUS back to EEPROM
+    // defaults, which is undesirable when we've just set a specific strap.
+    if (!FLAGS_recovery && !FLAGS_shutdown) {
+        reattach_kernel_driver();
+    }
+
     gflags::ShutDownCommandLineFlags();
 
     if (!FLAGS_quiet)

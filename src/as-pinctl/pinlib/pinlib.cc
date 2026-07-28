@@ -17,6 +17,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <errno.h>
+#include <dirent.h>
+#include <sys/stat.h>
 #include <ftdi.h>
 #include <gflags/gflags.h>
 #include <iostream>
@@ -99,8 +102,96 @@ int open(struct ftdi_context **ftdiref, bool quiet)
 
 int close(ftdi_context *ftdi)
 {
+    // Restore normal UART mode before releasing the handle so any subsequent
+    // ftdi_sio bind sees a sane chip. We do NOT re-attach the kernel driver
+    // here (that is caller-controlled via reattach_kernel_driver()) because
+    // after a recovery-strap the caller may want to leave the chip alone.
+    if (ftdi) {
+        ftdi_disable_bitbang(ftdi);
+    }
     ftdi_usb_close(ftdi);
     ftdi_free(ftdi);
+    return 0;
+}
+
+// Re-attach ftdi_sio to the FT232H by writing its interface path to
+// /sys/bus/usb/drivers/ftdi_sio/bind. libftdi detaches ftdi_sio when it
+// opens the device but never re-attaches on close, so /dev/ttyUSB* stays
+// gone until we do this. libusb_attach_kernel_driver() returns success but
+// does not reliably trigger a driver probe on ftdi_sio; sysfs bind does.
+//
+// Locates the FT232H (0403:6014, or any FTDI matched by libftdi_usb_find_all)
+// via /sys and writes its interface-0 path to the bind attribute. Silent no-op
+// if the driver is already bound or the device can't be found.
+int reattach_kernel_driver(void)
+{
+    // Find the FTDI USB interface by scanning /sys/bus/usb/devices for
+    // idVendor=0403. We intentionally don't hardcode the vid:pid or the
+    // bus/port path so this works across carrier revisions.
+    const char *dev_root = "/sys/bus/usb/devices";
+    DIR *d = opendir(dev_root);
+    if (!d) return -1;
+
+    char busdev[256] = {0};
+    struct dirent *ent;
+    while ((ent = readdir(d)) != NULL) {
+        // We want interface entries like "1-6.2:1.0"; skip everything else.
+        const char *colon = strchr(ent->d_name, ':');
+        if (!colon) continue;
+
+        // Derive the parent USB device name by stripping ":X.Y". Sysfs
+        // presents /sys/bus/usb/devices as a flat symlink farm, so we can't
+        // just do "<iface>/../idVendor" — we need to look up the sibling.
+        char parent[128] = {0};
+        size_t plen = colon - ent->d_name;
+        if (plen == 0 || plen >= sizeof(parent)) continue;
+        memcpy(parent, ent->d_name, plen);
+        parent[plen] = 0;
+
+        char vid_path[512];
+        snprintf(vid_path, sizeof(vid_path), "%s/%s/idVendor",
+                 dev_root, parent);
+        FILE *f = fopen(vid_path, "r");
+        if (!f) continue;
+        char vid[8] = {0};
+        if (fgets(vid, sizeof(vid), f)) {
+            // Strip newline for comparison.
+            vid[strcspn(vid, "\r\n")] = 0;
+        }
+        fclose(f);
+        if (vid[0] == 0 || strcmp(vid, "0403") != 0) continue;
+
+        // Match interface 0 only (ftdi_sio binds per-interface).
+        if (strcmp(colon, ":1.0") != 0) continue;
+
+        snprintf(busdev, sizeof(busdev), "%s", ent->d_name);
+        break;
+    }
+    closedir(d);
+
+    if (busdev[0] == 0) {
+        fprintf(stderr, "warning: no FTDI interface found under %s\n", dev_root);
+        return -1;
+    }
+
+    // If already bound, nothing to do.
+    char drv_link[512];
+    snprintf(drv_link, sizeof(drv_link), "%s/%s/driver", dev_root, busdev);
+    if (access(drv_link, F_OK) == 0) return 0;
+
+    FILE *bind = fopen("/sys/bus/usb/drivers/ftdi_sio/bind", "w");
+    if (!bind) {
+        fprintf(stderr, "warning: cannot open ftdi_sio bind attribute: %s\n",
+                strerror(errno));
+        return -1;
+    }
+    if (fputs(busdev, bind) < 0) {
+        fprintf(stderr, "warning: ftdi_sio bind write failed for %s: %s\n",
+                busdev, strerror(errno));
+        fclose(bind);
+        return -1;
+    }
+    fclose(bind);
     return 0;
 }
 

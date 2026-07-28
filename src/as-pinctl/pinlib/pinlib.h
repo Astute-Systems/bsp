@@ -79,4 +79,16 @@ int read_decode_eeprom(struct ftdi_context *ftdi);
 ///
 void print_info(struct ftdi_context *ftdi);
 
+///
+/// \brief Re-attach the ftdi_sio kernel driver so /dev/ttyUSB* reappears.
+///
+/// libftdi detaches ftdi_sio on open and does not re-attach on close, so
+/// the serial console device stays gone until userspace rebinds it. Call
+/// this after close() when you want the console back. Skip this after a
+/// recovery-strap (the caller may want to avoid glitching CBUS again).
+///
+/// \return 0 on success or if already bound; -1 on error.
+///
+int reattach_kernel_driver(void);
+
 #endif
