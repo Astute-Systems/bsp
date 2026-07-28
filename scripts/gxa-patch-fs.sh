@@ -50,14 +50,25 @@ function copy_configs()
   echogreen "Copying $L4T_OVERLAY_DIR onto Linux for Tegra..."
   sudo cp -rf "$L4T_OVERLAY_DIR"/* "$L4T"/
 
-  # r36-only tweaks: board conf permission + MB2 BCT EEPROM read-size patch
+  # r36-only: board conf gets shipped read-only in the BSP tarball; loosen it
+  # so downstream steps can rewrite it. r39+ ships it writable already.
   if [ -n "$L4T_MAJOR" ] && [ "$L4T_MAJOR" -lt 39 ]; then
     if [ -n "$L4T_CONFIG_FILE" ] && [ -f "$L4T/$L4T_CONFIG_FILE" ]; then
       chmod a+rwx "$L4T/$L4T_CONFIG_FILE"
     fi
-    if [ -f "$L4T/bootloader/$MB2_BCT_COMMON" ]; then
+  fi
+
+  # MB2 BCT EEPROM read-size patch: GXA-1 has no carrier ID EEPROM at 0xac, so
+  # zero the read size to stop MB1/MB2 from probing it at boot. Applies to all
+  # L4T generations that ship this dtsi with the stock 0x100 default.
+  if [ -f "$L4T/bootloader/$MB2_BCT_COMMON" ]; then
+    if ! grep -q 'cvb_eeprom_read_size = <0x0>;' "$L4T/bootloader/$MB2_BCT_COMMON"; then
       sed -i 's/cvb_eeprom_read_size = <0x100>;/cvb_eeprom_read_size = <0x0>;/' \
         "$L4T/bootloader/$MB2_BCT_COMMON"
+      if ! grep -q 'cvb_eeprom_read_size = <0x0>;' "$L4T/bootloader/$MB2_BCT_COMMON"; then
+        echored "Failed to patch cvb_eeprom_read_size in $MB2_BCT_COMMON"
+        exit 1
+      fi
     fi
   fi
 }
