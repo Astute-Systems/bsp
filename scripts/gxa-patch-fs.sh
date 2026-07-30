@@ -127,6 +127,12 @@ fi
 echo "Installing no-op nv-l4t-usb-device-mode.service stub..."
 STUB="$L4T/rootfs/etc/systemd/system/nv-l4t-usb-device-mode.service"
 mkdir -p "$(dirname "$STUB")"
+# The stock sample rootfs ships this path as a dangling symlink to
+# /opt/nvidia/l4t-usb-device-mode/nv-l4t-usb-device-mode.service (that target
+# is only populated later by apply_binaries.sh from nvidia-l4t-init). A shell
+# `>` redirect would follow the symlink and fail with "No such file or
+# directory", so unlink it first and write our stub as a plain regular file.
+rm -f "$STUB"
 cat > "$STUB" <<'EOF'
 # GXA-1 stub: xudc is disabled in the device tree, this board has no USB
 # device-mode port. This unit exists only to satisfy nv-oobe.service's
