@@ -171,11 +171,26 @@
 		};
 
 		usb@3550000 {
-			status = "okay";
-
-			phys = <&{/bus@0/padctl@3520000/pads/usb2/lanes/usb2-1}>,
-			       <&{/bus@0/padctl@3520000/pads/usb3/lanes/usb3-1}>;
-			phy-names = "usb2-1", "usb3-1";
+			/*
+			 * GXA-1: xudc (USB device controller) is disabled.
+			 *
+			 * The devkit points xudc at usb2-1 / usb3-1, but on GXA-1
+			 * that pad-set is wired to an on-board USB hub (host mode
+			 * only) — there is no physical device-mode port here.
+			 * The only OTG-capable port is usb2-0 ("usb debug"),
+			 * which is served by xhci with usb-role-switch.
+			 *
+			 * With xudc enabled the driver hangs in deferred probe
+			 * ("failed to get usbphy-1") because the UPHY lane
+			 * allocation from ODMDATA doesn't provide an SS phy for
+			 * usb3-1, which then blocks nv-l4t-usb-device-mode.service
+			 * for its full 90s timeout at boot.
+			 *
+			 * Disabling here retires the kernel-side failure. BootROM
+			 * recovery flashing (as-pinctl -recovery -> 0955:7023) is
+			 * unaffected — that uses BootROM USB, not this driver.
+			 */
+			status = "disabled";
 		};
 
 		usb@3610000 {
