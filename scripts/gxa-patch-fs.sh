@@ -101,4 +101,59 @@ else
   rm -rf $L4T/rootfs/etc/nvpower/nvfancontrol
 fi
 
+## nv-l4t-usb-device-mode.service on GXA-1
+##
+## Historical: this service was masked because tegra-xudc deferred-probed
+## forever ("failed to get usbphy-1"), timing out for ~90s and blocking OOBE.
+##
+## Root cause fixed: xudc is disabled in the GXA-1 device tree
+## (see tegra234-p3737-0000+p3701.dtsi, usb@3550000 { status = "disabled"; }).
+## GXA-1 has no USB device-mode port (the OTG-capable USB_0 lane is soldered
+## to the FT232RQ debug UART; user ports go through USB2/USB3 hubs in host
+## mode), so the driver has nothing to bind to and this service has nothing
+## real to configure.
+##
+## Remaining problem: nv-oobe.service ships with
+##   Requires=nv-load-display-modules.service nv-l4t-usb-device-mode.service
+## The stock nv-l4t-usb-device-mode.service unit is not installed on this
+## rootfs (it lives in the nvidia-l4t-init deb which pulls it in on r39.2),
+## and even if it were, we don't want its ExecStart running on GXA-1. If the
+## unit is missing, systemd refuses to start nv-oobe.service and OOBE fails.
+##
+## Fix: ship a no-op stub unit at /etc/systemd/system/. Because /etc/systemd
+## overrides /usr/lib/systemd, this stub also survives any future apt upgrade
+## of the vendor package that would otherwise re-install a functional (and
+## for us, broken) unit under /usr/lib.
+echo "Installing no-op nv-l4t-usb-device-mode.service stub..."
+STUB="$L4T/rootfs/etc/systemd/system/nv-l4t-usb-device-mode.service"
+mkdir -p "$(dirname "$STUB")"
+cat > "$STUB" <<'EOF'
+# GXA-1 stub: xudc is disabled in the device tree, this board has no USB
+# device-mode port. This unit exists only to satisfy nv-oobe.service's
+# Requires= dependency without pulling in the vendor script (which would
+# try to configure a non-existent UDC gadget). Placed under /etc/systemd
+# so it wins over any /usr/lib/systemd copy shipped by future apt upgrades.
+[Unit]
+Description=Stub for nv-l4t-usb-device-mode (GXA-1: xudc disabled in DT)
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+RemainAfterExit=yes
+[Install]
+WantedBy=multi-user.target
+EOF
+
+## Disable APT auto-update timers.
+##
+## apt-daily.service and apt-daily-upgrade.service block multi-user.target
+## for up to ~2min at each boot while they try to fetch metadata / upgrade
+## packages. On GXA-1 this is unwanted: fielded units may have no network,
+## and updates are managed centrally, not by a random background timer.
+## The units and timers stay installed so the customer can re-enable them
+## manually if desired; only the timer-target symlinks are removed.
+echo "Disabling apt-daily timers..."
+for t in apt-daily.timer apt-daily-upgrade.timer; do
+  rm -f "$L4T/rootfs/etc/systemd/system/timers.target.wants/$t"
+done
+
 echoblue "Patching done..."
