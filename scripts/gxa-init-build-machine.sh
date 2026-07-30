@@ -43,10 +43,15 @@ else
   FINAL="FALSE"
 fi
 
-# Second arg is release version
-L4T_RELEASE=$2
+# Second arg is release version. Historically this was stored in $L4T_RELEASE
+# but the XML lookup and downstream references used $RELEASE / $L4T_VERSION,
+# neither of which was ever set on the happy path -- so the "user specified"
+# branch was dead code and every invocation fell through to get_default().
+# Unify on $L4T_VERSION (which is what get_default() also exports) so both
+# paths agree.
+L4T_VERSION=$2
 
-source ./scripts/gxa-utils.sh $L4T_RELEASE
+source ./scripts/gxa-utils.sh $L4T_VERSION
 echoblue "GXA-1 Initialization Script"
 
 
@@ -62,25 +67,25 @@ fi
 # Install necessary packages (Check if needed for PROD build...)
 #
 #######################################################
-echoblue "Installing necessary packages for $RELEASE build"
+echoblue "Installing necessary packages for L4T ${L4T_VERSION:-<default>} build"
 sudo apt-get update -y $APT_EXTRA_ARGS
 sudo apt-get install -y $APT_EXTRA_ARGS qemu-user-static libxml2-utils flex bison bc libxml2-utils makeself cpio pkg-config dialog dpkg wget sudo lbzip2 make cmake gcc g++ libgpiod-dev libftdi1-dev libgflags-dev
 
 echoblue "Reading L4T Version from XML file"
-grunt=$(xmllint --xpath "string(/l4tSources/l4t${RELEASE})" ${XML_FILE})
-if [ -z "$grunt" ]; then
-    echogreen "No user specified L4T version"
+if [ -z "$L4T_VERSION" ]; then
+    echogreen "No user-specified L4T version, using default"
     get_default
 else
-  grunt=$(xmllint --xpath "string(/l4tSources/l4t${RELEASE})" ${XML_FILE})
-  
-  #check if grunt is empty
-  if [ -z "$grunt" ]; then
-      echo "User specified L4T version $RELEASE not found in XML file."
-      echo "Falling back to latest L4T version."
-      get_default
-  fi
+    grunt=$(xmllint --xpath "string(/l4tSources/l4t${L4T_VERSION})" ${XML_FILE})
+    if [ -z "$grunt" ]; then
+        echo "User-specified L4T version $L4T_VERSION not found in XML file."
+        echo "Falling back to latest L4T version."
+        get_default
+    else
+        echogreen "Using user-specified L4T version=${L4T_VERSION}"
+    fi
 fi
+export L4T_VERSION
 
 TOOLCHAIN=$(xmllint --xpath "string(/l4tSources/l4t${L4T_VERSION}/toolchain)" ${XML_FILE})
 NVIDIA=$(xmllint --xpath "string(/l4tSources/l4t${L4T_VERSION}/nvidia)" ${XML_FILE})
