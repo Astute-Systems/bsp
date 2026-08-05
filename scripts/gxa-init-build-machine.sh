@@ -69,7 +69,25 @@ fi
 #######################################################
 echoblue "Installing necessary packages for L4T ${L4T_VERSION:-<default>} build"
 sudo apt-get update -y $APT_EXTRA_ARGS
-sudo apt-get install -y $APT_EXTRA_ARGS qemu-user-static libxml2-utils flex bison bc libxml2-utils makeself cpio pkg-config dialog dpkg wget sudo lbzip2 make cmake gcc g++ libgpiod-dev libftdi1-dev libgflags-dev
+
+# qemu user-mode static binary package.
+# * <= 25.04: qemu-user-static (real package)
+# * >= 25.10: qemu-user-static is a virtual package provided by
+#             qemu-user-binfmt (and qemu-user-binfmt-hwe). Installing the
+#             virtual name fails with "no installation candidate", so pick
+#             the real name explicitly.
+UBUNTU_REL=$(lsb_release -rs 2>/dev/null || echo "")
+UBUNTU_MAJOR=${UBUNTU_REL%%.*}
+UBUNTU_MINOR=${UBUNTU_REL##*.}
+if [ -n "$UBUNTU_MAJOR" ] && \
+   { [ "$UBUNTU_MAJOR" -gt 25 ] 2>/dev/null || \
+     { [ "$UBUNTU_MAJOR" -eq 25 ] 2>/dev/null && [ "$UBUNTU_MINOR" -ge 10 ] 2>/dev/null; }; }; then
+  QEMU_PKG=qemu-user-binfmt
+else
+  QEMU_PKG=qemu-user-static
+fi
+
+sudo apt-get install -y $APT_EXTRA_ARGS $QEMU_PKG libxml2-utils flex bison bc libxml2-utils makeself cpio pkg-config dialog dpkg wget sudo lbzip2 make cmake gcc g++ libgpiod-dev libftdi1-dev libgflags-dev
 
 echoblue "Reading L4T Version from XML file"
 if [ -z "$L4T_VERSION" ]; then
