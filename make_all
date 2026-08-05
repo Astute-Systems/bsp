@@ -1,11 +1,12 @@
 #!/bin/bash -e
 
+# Only 39.2 is a current, supported target. Older L4T versions were dropped
+# from config/l4t-sources.xml, so producing installers for them yields a
+# .run that, at install time, can't resolve its XML entry and silently
+# falls back to "latest" -- misleading and hard to diagnose in the field.
+# Keep this list in lockstep with the <versions> block of
+# config/l4t-sources.xml.
+
 echo "Making all BSPs"
 
-./make 36.3
-./make 36.4
-./make 36.4.3
-./make 36.4.4
-./make 38.2
-./make 38.2.1
 ./make 39.2
