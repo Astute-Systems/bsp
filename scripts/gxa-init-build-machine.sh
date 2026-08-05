@@ -71,23 +71,41 @@ echoblue "Installing necessary packages for L4T ${L4T_VERSION:-<default>} build"
 sudo apt-get update -y $APT_EXTRA_ARGS
 
 # qemu user-mode static binary package.
-# * <= 25.04: qemu-user-static (real package)
-# * >= 25.10: qemu-user-static is a virtual package provided by
-#             qemu-user-binfmt (and qemu-user-binfmt-hwe). Installing the
-#             virtual name fails with "no installation candidate", so pick
-#             the real name explicitly.
+# * <= 25.04: qemu-user-static (real package). Ships /usr/bin/qemu-*-static
+#             binaries (static-linked) that NVIDIA's nv-apply-debs.sh (and
+#             our own chroot-test.sh) expect by hardcoded path/name.
+# * >= 25.10: qemu-user-static is a virtual package. The real static-linked
+#             aarch64 emulator now lives in qemu-user (installed via the
+#             qemu-user-binfmt metapackage) at /usr/bin/qemu-aarch64 --
+#             *without* the "-static" suffix, even though the binary is
+#             still statically linked. Anything that looks for the
+#             "*-static" filename (nv-apply-debs.sh, chroot-test.sh, ...)
+#             breaks on 25.10+. Install qemu-user + qemu-user-binfmt, then
+#             restore the historical filenames via compatibility symlinks.
 UBUNTU_REL=$(lsb_release -rs 2>/dev/null || echo "")
 UBUNTU_MAJOR=${UBUNTU_REL%%.*}
 UBUNTU_MINOR=${UBUNTU_REL##*.}
+NEEDS_QEMU_STATIC_SYMLINKS=0
 if [ -n "$UBUNTU_MAJOR" ] && \
    { [ "$UBUNTU_MAJOR" -gt 25 ] 2>/dev/null || \
      { [ "$UBUNTU_MAJOR" -eq 25 ] 2>/dev/null && [ "$UBUNTU_MINOR" -ge 10 ] 2>/dev/null; }; }; then
-  QEMU_PKG=qemu-user-binfmt
+  QEMU_PKG="qemu-user qemu-user-binfmt"
+  NEEDS_QEMU_STATIC_SYMLINKS=1
 else
   QEMU_PKG=qemu-user-static
 fi
 
 sudo apt-get install -y $APT_EXTRA_ARGS $QEMU_PKG libxml2-utils flex bison bc libxml2-utils makeself cpio pkg-config dialog dpkg wget sudo lbzip2 make cmake gcc g++ libgpiod-dev libftdi1-dev libgflags-dev
+
+# 25.10+: shim in the "-static" filenames that nv-apply-debs.sh expects.
+# We only symlink aarch64 (the target ISA we actually flash); add more here
+# if a future step needs another arch. Idempotent.
+if [ "$NEEDS_QEMU_STATIC_SYMLINKS" = "1" ]; then
+  if [ -x /usr/bin/qemu-aarch64 ] && [ ! -e /usr/bin/qemu-aarch64-static ]; then
+    echogreen "Creating /usr/bin/qemu-aarch64-static -> qemu-aarch64 shim (25.10+ rename)"
+    sudo ln -s qemu-aarch64 /usr/bin/qemu-aarch64-static
+  fi
+fi
 
 echoblue "Reading L4T Version from XML file"
 if [ -z "$L4T_VERSION" ]; then
