@@ -76,6 +76,31 @@ copy_configs
 
 #######################################################
 #
+# PATCH FLASH.SH's RECOVERY RAMDISK BUILD FOR MODERN OPENSSH HOSTS
+#
+#######################################################
+## flash.sh builds recovery.img via
+## tools/ota_tools/version_upgrade/ota_make_recovery_img_dtb.sh, which
+## unconditionally generates a DSA host key for the recovery-mode sshd:
+##   ssh-keygen -t dsa -N "" -f ... >/dev/null 2>&1;check_error
+## Modern OpenSSH (>= 9.8, e.g. Ubuntu 24.10+/25.x flashing hosts) has
+## dropped "-t dsa" support entirely ("unknown key type dsa"). Because the
+## keygen's output is redirected to /dev/null, the failure is completely
+## silent and check_error aborts the whole flash with a bare
+## "command is failed" right after the recovery ramdisk's
+## "_BASE_KERNEL_VERSION=..." banner. The DSA key is never referenced by the
+## sshd_config this script generates (only rsa/ecdsa/ed25519 HostKeys are
+## written), so failing to generate it is harmless. Demote it from a fatal
+## check_error to a check_warning so flashing from a host with newer OpenSSH
+## doesn't abort the build.
+REC_IMG_SCRIPT="$L4T/tools/ota_tools/version_upgrade/ota_make_recovery_img_dtb.sh"
+if [ -f "$REC_IMG_SCRIPT" ] && grep -q 'ssh-keygen -t dsa.*check_error' "$REC_IMG_SCRIPT"; then
+  echo "Patching ota_make_recovery_img_dtb.sh: DSA host key generation is non-fatal on modern OpenSSH..."
+  sed -i '/ssh-keygen -t dsa/s/;check_error$/;check_warning/' "$REC_IMG_SCRIPT"
+fi
+
+#######################################################
+#
 # MODIFY THE FILESYSTEM FOR GXA-1
 #
 #######################################################
